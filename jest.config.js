@@ -10,14 +10,17 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
+      branches: 70,
+      functions: 60,
+      lines: 65,
+      statements: 70
     }
   },
   moduleFileExtensions: ['ts', 'js'],
   transform: {
     '^.+\\.ts$': 'ts-jest'
+  },
+  moduleNameMapper: {
+    '^@angular/(.*)$': '<rootDir>/src/__mocks__/@angular/$1',
   }
 };

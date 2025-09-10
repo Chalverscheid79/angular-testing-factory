@@ -4,19 +4,34 @@
  * @description
  * Ready-to-use Mocks für Angular Material Services
  * wie MatDialog, MatSnackBar etc.
+ * 
+ * @note Falls @angular/material nicht verfügbar ist, werden Fallback-Mocks bereitgestellt
  */
 
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarRef } from '@angular/material/snackbar';
 import { of, EMPTY } from 'rxjs';
-import { createMockService, createMockProvider } from '../core/mock-factory';
+import { createServiceProviderFactory } from '../core/mock-factory';
 import { Provider } from '@angular/core';
+
+// Type definitions for compatibility
+interface MockMatDialog {
+  open: any;
+  closeAll: any;
+  getDialogById: any;
+  openDialogs: any[];
+}
+
+interface MockMatSnackBar {
+  open: any;
+  openFromComponent: any;
+  openFromTemplate: any;
+  dismiss: any;
+}
 
 /* ====================================
  * SERVICE DEFAULTS
  * ==================================== */
 
-const MAT_DIALOG_DEFAULTS: Partial<jest.Mocked<MatDialog>> = {
+const MAT_DIALOG_DEFAULTS: Partial<jest.Mocked<MockMatDialog>> = {
   open: jest.fn(() => ({
     afterClosed: jest.fn(() => of(undefined)),
     afterOpened: jest.fn(() => of(undefined)),
@@ -31,13 +46,13 @@ const MAT_DIALOG_DEFAULTS: Partial<jest.Mocked<MatDialog>> = {
     getState: jest.fn(() => 0),
     id: 'mock-dialog',
     componentInstance: {} as any
-  } as MatDialogRef<any>)),
-  closeAll: jest.fn(),
-  getDialogById: jest.fn(() => null),
+  } as any)) as any,
+  closeAll: jest.fn() as any,
+  getDialogById: jest.fn(() => null) as any,
   openDialogs: []
 };
 
-const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MatSnackBar>> = {
+const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MockMatSnackBar>> = {
   open: jest.fn(() => ({
     afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
     afterOpened: jest.fn(() => of()),
@@ -45,7 +60,7 @@ const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MatSnackBar>> = {
     dismiss: jest.fn(),
     dismissWithAction: jest.fn(),
     instance: {} as any
-  } as MatSnackBarRef<any>)),
+  } as any)) as any,
   openFromComponent: jest.fn(() => ({
     afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
     afterOpened: jest.fn(() => of()),
@@ -53,7 +68,7 @@ const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MatSnackBar>> = {
     dismiss: jest.fn(),
     dismissWithAction: jest.fn(),
     instance: {} as any
-  } as MatSnackBarRef<any>)),
+  } as any)) as any,
   openFromTemplate: jest.fn(() => ({
     afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
     afterOpened: jest.fn(() => of()),
@@ -61,31 +76,25 @@ const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MatSnackBar>> = {
     dismiss: jest.fn(),
     dismissWithAction: jest.fn(),
     instance: {} as any
-  } as MatSnackBarRef<any>)),
-  dismiss: jest.fn()
+  } as any)) as any,
+  dismiss: jest.fn() as any
 };
 
-/* ====================================
- * CONVENIENCE FACTORIES
- * ==================================== */
-
-const createMockMatDialog = (overrides: Partial<jest.Mocked<MatDialog>> = {}) =>
-  createMockService(MAT_DIALOG_DEFAULTS, overrides);
-
-const createMockMatSnackBar = (overrides: Partial<jest.Mocked<MatSnackBar>> = {}) =>
-  createMockService(MAT_SNACK_BAR_DEFAULTS, overrides);
+// Mock-Token für Tests (falls Angular Material nicht verfügbar)
+const MAT_DIALOG_TOKEN = 'MAT_DIALOG_MOCK';
+const MAT_SNACK_BAR_TOKEN = 'MAT_SNACK_BAR_MOCK';
 
 /* ====================================
  * PUBLIC API: PROVIDER FACTORIES
  * ==================================== */
 
 /** Angular Provider für MatDialog Mock */
-export const provideMatDialogMock = (overrides: Partial<jest.Mocked<MatDialog>> = {}): Provider =>
-  createMockProvider(MatDialog, createMockMatDialog(overrides));
+export const provideMatDialogMock = (overrides: Partial<jest.Mocked<MockMatDialog>> = {}): Provider =>
+  createServiceProviderFactory(MAT_DIALOG_TOKEN, MAT_DIALOG_DEFAULTS)(overrides);
 
 /** Angular Provider für MatSnackBar Mock */
-export const provideMatSnackBarMock = (overrides: Partial<jest.Mocked<MatSnackBar>> = {}): Provider =>
-  createMockProvider(MatSnackBar, createMockMatSnackBar(overrides));
+export const provideMatSnackBarMock = (overrides: Partial<jest.Mocked<MockMatSnackBar>> = {}): Provider =>
+  createServiceProviderFactory(MAT_SNACK_BAR_TOKEN, MAT_SNACK_BAR_DEFAULTS)(overrides);
 
 /**
  * Convenience Provider für alle Angular Material Services
