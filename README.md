@@ -289,7 +289,11 @@ git commit -m "feat(presets): add Angular Forms mock collection"
 **💥 Major Release** (`1.0.0` → `2.0.0`):
 
 ```bash
-git commit -m "feat!: redesign API for better TypeScript inference
+git commit -m "feat!: redesign API for better TypeScript inference"
+git commit -m "refactor!: remove deprecated functions"
+
+# Or with BREAKING CHANGE in body:
+git commit -m "feat: redesign API for better TypeScript inference
 
 BREAKING CHANGE: createMockProvider now requires explicit type parameter"
 ```
@@ -306,10 +310,14 @@ BREAKING CHANGE: createMockProvider now requires explicit type parameter"
 
 #### Breaking Changes
 
-Add `BREAKING CHANGE:` in commit body or use `!` after type for **Major version**:
+Add `BREAKING CHANGE:` in commit body **OR** use `!` after type for **Major version**:
 
 ```bash
-git commit -m "feat!: remove deprecated createLegacyMock function"
+# Option 1: ! suffix (recommended)
+git commit -m "feat!: remove deprecated createLegacyMock function"  
+git commit -m "refactor!: change API structure"
+
+# Option 2: BREAKING CHANGE in body
 git commit -m "refactor: improve type inference
 
 BREAKING CHANGE: Generic type parameters order changed"
