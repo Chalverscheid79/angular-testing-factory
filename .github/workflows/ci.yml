@@ -75,9 +75,7 @@ jobs:
       id: version_bump
       run: |
         # Check if commit contains breaking changes or features
-        if [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE"* ]]; then
-          echo "bump=major" >> $GITHUB_OUTPUT
-        elif [[ "${{ github.event.head_commit.message }}" =~ ^[a-z]+\!: ]]; then
+        if [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE"* || "${{ github.event.head_commit.message }}" =~ ^[a-z]+\!: ]]; then
           echo "bump=major" >> $GITHUB_OUTPUT
         elif [[ "${{ github.event.head_commit.message }}" == feat* ]]; then
           echo "bump=minor" >> $GITHUB_OUTPUT
