@@ -1,0 +1,8 @@
+# Global code ownership
+# Als Repository Owner haben Sie automatisch Rechte für alle Dateien
+* @Chalverscheid79
+
+# Spezifische Bereiche (optional für die Zukunft)
+/src/core/ @Chalverscheid79
+/.github/ @Chalverscheid79
+/package.json @Chalverscheid79
