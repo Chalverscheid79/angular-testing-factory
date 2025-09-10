@@ -1,5 +1,5 @@
 {
-  "name": "@christianh/angular-testing-factory",
+  "name": "@halverscheid-fiae/angular-testing-factory",
   "version": "1.0.0",
   "description": "Type-safe Angular service mocking with zero drift guarantee for Angular 20+",
   "keywords": [

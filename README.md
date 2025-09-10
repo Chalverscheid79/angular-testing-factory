@@ -1,9 +1,9 @@
-# @christianh/angular-testing-factory
+# @halverscheid-fiae/angular-testing-factory
 
 > **Revolutionary type-safe Angular service mocking for Angular 20+**  
 > **Zero Mock Drift™ guarantee with compile-time validation**
 
-[![npm version](https://badge.fury.io/js/%40christianh%2Fangular-testing-factory.svg)](https://badge.fury.io/js/%40christianh%2Fangular-testing-factory)
+[![npm version](https://badge.fury.io/js/%40halverscheid-fiae%2Fangular-testing-factory.svg)](https://badge.fury.io/js/%40halverscheid-fiae%2Fangular-testing-factory)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
 [![Jest](https://img.shields.io/badge/Jest-29+-green.svg)](https://jestjs.io/)
@@ -28,7 +28,7 @@
 ### Installation
 
 ```bash
-npm install --save-dev @christianh/angular-testing-factory
+npm install --save-dev @halverscheid-fiae/angular-testing-factory
 ```
 
 ### 90% Use Case: Preset Collections
@@ -39,7 +39,7 @@ import {
   provideHttpClientMock, 
   provideRouterMock, 
   provideMatDialogMock 
-} from '@christianh/angular-testing-factory';
+} from '@halverscheid-fiae/angular-testing-factory';
 
 describe('MyComponent', () => {
   beforeEach(() => {
@@ -128,7 +128,7 @@ const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessServ
 
 ```typescript
 import { of } from 'rxjs';
-import { provideHttpClientMock } from '@christianh/angular-testing-factory';
+import { provideHttpClientMock } from '@halverscheid-fiae/angular-testing-factory';
 
 // Mock HTTP calls with specific responses
 TestBed.configureTestingModule({
@@ -225,7 +225,7 @@ TestBed.configureTestingModule({
 ## 🏗️ Architecture
 
 ```
-@christianh/angular-testing-factory/
+@halverscheid-fiae/angular-testing-factory/
 ├── 🏭 core/           # Universal Mock Factory System
 ├── 📦 presets/        # Ready-to-use Service Mocks
 ├── 🎯 types/          # TypeScript Definitions
