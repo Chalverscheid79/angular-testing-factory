@@ -1,0 +1,70 @@
+{
+  "name": "@christianh/angular-testing-factory",
+  "version": "1.0.0",
+  "description": "Type-safe Angular service mocking with zero drift guarantee for Angular 20+",
+  "keywords": [
+    "angular",
+    "testing",
+    "jest",
+    "mock",
+    "typescript",
+    "signals",
+    "standalone",
+    "angular20"
+  ],
+  "author": "Christian Halverscheid",
+  "license": "MIT",
+  "homepage": "https://github.com/Chalverscheid79/angular-testing-factory#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Chalverscheid79/angular-testing-factory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Chalverscheid79/angular-testing-factory/issues"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm test",
+    "release": "semantic-release"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=20.0.0",
+    "@angular/common": ">=20.0.0",
+    "jest": ">=29.0.0",
+    "rxjs": ">=7.0.0",
+    "typescript": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@angular/core": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/material": "^20.0.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.12.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "rxjs": "^7.8.1",
+    "semantic-release": "^23.0.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.0"
+  }
+}
