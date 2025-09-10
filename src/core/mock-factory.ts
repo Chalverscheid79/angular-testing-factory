@@ -87,7 +87,7 @@ export const createCustomServiceProviderMock = <T>(
 ): Provider => {
   // Internal satisfies validation for Mock Drift Prevention
   const validatedMock = mockImplementation satisfies Partial<jest.Mocked<T>>;
-  return { provide: serviceToken, useValue: validatedMock };
+  return createMockProvider(serviceToken, validatedMock);
 };
 
 /**
