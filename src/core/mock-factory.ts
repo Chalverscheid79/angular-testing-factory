@@ -45,25 +45,13 @@ const createMockService = <T>(
 /**
  * Creates Angular providers for any mock services.
  *
+ * @internal For internal use only - not exported
  * @template T The service type
  * @param token The Angular injection token
  * @param mockService The mock service object
  * @returns Angular Provider for TestBed configuration
- * 
- * @example
- * ```typescript
- * // Consumer Usage:
- * const mockMyService = {
- *   getData: jest.fn(() => of(['data'])),
- *   saveData: jest.fn(() => Promise.resolve())
- * } satisfies MyService;
- * 
- * TestBed.configureTestingModule({
- *   providers: [createMockProvider(MyService, mockMyService)]
- * });
- * ```
  */
-export const createMockProvider = <T>(
+const createMockProvider = <T>(
   token: unknown, 
   mockService: Partial<jest.Mocked<T>>
 ): Provider => {
@@ -99,7 +87,7 @@ export const createCustomServiceProviderMock = <T>(
 ): Provider => {
   // Internal satisfies validation for Mock Drift Prevention
   const validatedMock = mockImplementation satisfies Partial<jest.Mocked<T>>;
-  return { provide: serviceToken, useValue: validatedMock };
+  return createMockProvider(serviceToken, validatedMock);
 };
 
 /**
@@ -140,6 +128,6 @@ export const createServiceProviderFactory = <T>(
     // Compile-time validation of overrides
     const validatedOverrides = overrides satisfies Partial<jest.Mocked<T>>;
     const mockService = createMockService(validatedDefaults, validatedOverrides);
-    return { provide: serviceToken, useValue: mockService };
+    return createMockProvider(serviceToken, mockService);
   };
 };

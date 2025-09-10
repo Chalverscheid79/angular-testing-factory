@@ -21,8 +21,8 @@
  * ```
  */
 
-// Core System
-export { createMockService, createMockProvider } from './core/mock-factory';
+// Core System (Public API)
+export { createServiceProviderFactory, createCustomServiceProviderMock } from './core/mock-factory';
 
 // Presets für häufige Angular Services
 export * from './presets/angular-common';

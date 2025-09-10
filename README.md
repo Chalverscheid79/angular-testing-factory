@@ -257,11 +257,85 @@ This library provides:
 
 Contributions welcome! Please read our [Contributing Guide](CONTRIBUTING.md).
 
+### Development Workflow
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes following our commit conventions (see below)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### 📋 Commit Message Conventions
+
+This project uses **automatic semantic versioning** based on commit messages. Please follow these conventions:
+
+#### Version Bumping Rules
+
+**🔧 Patch Release** (`1.0.0` → `1.0.1`):
+
+```bash
+git commit -m "fix: resolve HttpClient mock timeout issue"
+git commit -m "docs: update installation instructions"  
+git commit -m "chore: update dependencies"
+```
+
+**✨ Minor Release** (`1.0.0` → `1.1.0`):
+
+```bash
+git commit -m "feat: add MatSnackBar mock provider"
+git commit -m "feat(presets): add Angular Forms mock collection"
+```
+
+**💥 Major Release** (`1.0.0` → `2.0.0`):
+
+```bash
+git commit -m "feat!: redesign API for better TypeScript inference"
+git commit -m "refactor!: remove deprecated functions"
+
+# Or with BREAKING CHANGE in body:
+git commit -m "feat: redesign API for better TypeScript inference
+
+BREAKING CHANGE: createMockProvider now requires explicit type parameter"
+```
+
+#### Commit Types
+
+- `feat`: New features → **Minor version**
+- `fix`: Bug fixes → **Patch version**
+- `docs`: Documentation → **Patch version**
+- `style`: Code style → **Patch version**
+- `refactor`: Code refactoring → **Patch version**
+- `test`: Adding tests → **Patch version**
+- `chore`: Maintenance → **Patch version**
+
+#### Breaking Changes
+
+Add `BREAKING CHANGE:` in commit body **OR** use `!` after type for **Major version**:
+
+```bash
+# Option 1: ! suffix (recommended)
+git commit -m "feat!: remove deprecated createLegacyMock function"  
+git commit -m "refactor!: change API structure"
+
+# Option 2: BREAKING CHANGE in body
+git commit -m "refactor: improve type inference
+
+BREAKING CHANGE: Generic type parameters order changed"
+```
+
+### 🤖 Automatic Publishing
+
+When your PR is merged to `main`:
+
+1. ✅ **Version automatically bumped** based on commit messages
+2. ✅ **Git tag created** (e.g., `v1.2.3`)
+3. ✅ **NPM package published** automatically
+4. ✅ **No manual steps required!**
+
+**Example Workflow:**
+
+- You commit: `feat: add new provider for Angular Router`
+- After merge: `1.0.0` → `1.1.0` + NPM publish + Git tag `v1.1.0`
 
 ## 🐛 Issues
 
