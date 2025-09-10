@@ -1,20 +1,27 @@
 # @christianh/angular-testing-factory
 
-> Modern, type-safe Angular service mocking library for Angular 20+
+> **Revolutionary type-safe Angular service mocking for Angular 20+**  
+> **Zero Mock Drift™ guarantee with compile-time validation**
 
 [![npm version](https://badge.fury.io/js/%40christianh%2Fangular-testing-factory.svg)](https://badge.fury.io/js/%40christianh%2Fangular-testing-factory)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
 [![Jest](https://img.shields.io/badge/Jest-29+-green.svg)](https://jestjs.io/)
 
-## ✨ Features
+## 🎯 Why This Library?
 
-- 🎯 **Generic Mock System**: Universal factories for all Angular service types
-- 🛡️ **Zero Mock Drift**: TypeScript `satisfies` prevents compile-time errors  
-- ⚡ **3-Line Rule**: Add new services in seconds
-- 🧪 **Angular 20+ Native**: Signals, Standalone Components, Modern inject()
-- 📦 **Preset Collections**: HttpClient, Router, Material Dialog ready out-of-the-box
-- 🔄 **SignalStore Ready**: Special patterns for modern state management
+**The Problem:** Angular testing is painful. Manual mocks break when services change, TypeScript can't catch mock drift, and every new service needs tons of boilerplate.
+
+**The Solution:** This library provides **compile-time safe mocking** with **zero configuration** for 90% of use cases, and **zero mock drift** for your custom services.
+
+## ✨ Revolutionary Features
+
+- 🎯 **Zero Mock Drift™**: TypeScript `satisfies` catches mock inconsistencies at compile-time
+- ⚡ **One-Line Providers**: `provideHttpClientMock()` - Done!
+- 🔄 **Override Anything**: Per-test customization with the Factory Pattern
+- 🛡️ **100% Type Safe**: Full IntelliSense and compile-time validation
+- 📦 **Angular 20+ Native**: Signals, Standalone Components, modern inject()
+- � **Zero Config**: Works out-of-the-box with sensible defaults
 
 ## 🚀 Quick Start
 
@@ -24,29 +31,100 @@
 npm install --save-dev @christianh/angular-testing-factory
 ```
 
-### Basic Usage
+### 90% Use Case: Preset Collections
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClientMock, provideRouterMock } from '@christianh/angular-testing-factory';
+import { 
+  provideHttpClientMock, 
+  provideRouterMock, 
+  provideMatDialogMock 
+} from '@christianh/angular-testing-factory';
 
 describe('MyComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClientMock(),
-        provideRouterMock()
+        provideHttpClientMock(),    // ← HttpClient with sensible defaults
+        provideRouterMock(),        // ← Router with navigation mocks
+        provideMatDialogMock()      // ← MatDialog with dialog mocks
       ]
     });
   });
 
-  it('should work', () => {
-    // Your tests here
+  it('should work perfectly', () => {
+    // Your component gets fully mocked dependencies!
   });
 });
 ```
 
-### Advanced Usage with Overrides
+## 🔥 The Revolutionary Factory Pattern
+
+### Create Once, Override Everywhere
+
+```typescript
+// 1. Create your factory ONCE (in test-setup.ts or similar)
+const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessService, {
+  calculateRevenue: jest.fn(() => of(1000)),
+  processPayment: jest.fn(() => Promise.resolve(false)),
+  currentUser: signal({ id: 1, name: 'Test User' }),
+  isLoading: signal(false)
+});
+
+// 2. Use everywhere with per-test overrides:
+describe('Revenue Tests', () => {
+  it('should handle high revenue', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideMyBusinessServiceMock({ 
+          calculateRevenue: jest.fn(() => of(50000)) // ← Override just this!
+        })
+      ]
+    });
+    // Test high revenue scenario
+  });
+
+  it('should handle payment failures', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideMyBusinessServiceMock({ 
+          processPayment: jest.fn(() => Promise.reject('Card declined'))
+        })
+      ]
+    });
+    // Test payment failure scenario
+  });
+
+  it('should use sensible defaults', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideMyBusinessServiceMock() // ← All defaults, no overrides
+      ]
+    });
+    // Test normal flow
+  });
+});
+```
+
+### The Magic: Zero Mock Drift™
+
+```typescript
+interface MyBusinessService {
+  calculateRevenue(): Observable<number>;
+  processPayment(amount: number): Promise<boolean>;
+  currentUser: Signal<User>;
+  isLoading: WritableSignal<boolean>;
+}
+
+// ✅ This will catch ANY drift at compile-time:
+const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessService, {
+  calculateRevenue: jest.fn(() => of(1000)),
+  // ❌ If you forget a method → TypeScript error!
+  // ❌ If you add wrong method → TypeScript error!  
+  // ❌ If return type changes → TypeScript error!
+  // ❌ If service interface changes → TypeScript error!
+});
+```
 
 ```typescript
 import { of } from 'rxjs';
