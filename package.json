@@ -1,6 +1,6 @@
 {
   "name": "@halverscheid-fiae.de/angular-testing-factory",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Type-safe Angular service mocking with zero drift guarantee for Angular 20+",
   "keywords": [
     "angular",
