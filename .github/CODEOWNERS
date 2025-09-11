@@ -1,8 +1,12 @@
-# Global code ownership
-# Als Repository Owner haben Sie automatisch Rechte für alle Dateien
+# Repository Owner behält sich alle Approval-Rechte vor
+# Contributors können in Forks arbeiten, aber nur Owner approved PRs
+
+# Alle Dateien benötigen Owner-Approval für PRs
 * @Chalverscheid79
 
-# Spezifische Bereiche (optional für die Zukunft)
-/src/core/ @Chalverscheid79
+# Besonders kritische Bereiche (explizit dokumentiert)
 /.github/ @Chalverscheid79
 /package.json @Chalverscheid79
+/package-lock.json @Chalverscheid79
+/.releaserc.json @Chalverscheid79
+/rollup.config.mjs @Chalverscheid79
