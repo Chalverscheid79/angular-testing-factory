@@ -11,7 +11,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { DomSanitizer, SafeHtml, SafeUrl, SafeResourceUrl, SafeScript, SafeStyle } from '@angular/platform-browser';
 import { ElementRef, Provider } from '@angular/core';
 import { of, EMPTY } from 'rxjs';
@@ -70,7 +70,8 @@ const ACTIVATED_ROUTE_DEFAULTS = {
 // FormBuilder Mock - elegant mit jest.Mocked<Partial<FormBuilder>>
 // Das ist die RICHTIGE Lösung, die Christian vorgeschlagen hat!
 const FORM_BUILDER_DEFAULTS = {
-  control: jest.fn((formState: any, validatorOrOpts?: any, asyncValidator?: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  control: jest.fn((formState: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
     value: Array.isArray(formState) ? formState[0] : formState,
     valid: true,
     invalid: false,
@@ -112,7 +113,8 @@ const FORM_BUILDER_DEFAULTS = {
     defaultValue: undefined
   })),
   
-  group: jest.fn((controlsConfig: any, options?: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  group: jest.fn((controlsConfig: any, _options?: any) => {
     const controls: Record<string, any> = {};
     const value: Record<string, any> = {};
     
@@ -176,7 +178,8 @@ const FORM_BUILDER_DEFAULTS = {
     };
   }),
   
-  array: jest.fn((controls: any, validatorOrOpts?: any, asyncValidator?: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  array: jest.fn((controls: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
     controls: Array.isArray(controls) ? controls : [],
     length: Array.isArray(controls) ? controls.length : 0,
     at: jest.fn(),
@@ -213,7 +216,8 @@ const FORM_BUILDER_DEFAULTS = {
     status: 'VALID'
   })),
   
-  record: jest.fn((controls: any, validatorOrOpts?: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  record: jest.fn((controls: any, _validatorOrOpts?: any) => ({
     controls: controls || {},
     addControl: jest.fn(),
     removeControl: jest.fn(),
