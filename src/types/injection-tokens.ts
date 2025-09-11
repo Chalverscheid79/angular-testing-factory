@@ -1,6 +1,8 @@
 /**
- * @fileoverview Injection Tokens für Browser APIs
+ * @fileoverview Injection Tokens für Mock-Provider
  */
+
+/* eslint-disable no-undef */
 
 import { InjectionToken } from '@angular/core';
 
@@ -8,4 +10,4 @@ import { InjectionToken } from '@angular/core';
 export const DOCUMENT_TOKEN = new InjectionToken<Document>('DOCUMENT');
 
 /** Injection Token für Window */
-export const WINDOW_TOKEN = new InjectionToken<Window>('WINDOW');
+export const WINDOW_TOKEN = new InjectionToken<Window & typeof globalThis>('WINDOW');

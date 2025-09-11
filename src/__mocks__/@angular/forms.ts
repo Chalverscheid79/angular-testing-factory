@@ -2,22 +2,24 @@
  * Mock for @angular/forms
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+
 export class FormControl {
-  value: any;
+  value: unknown;
   
-  constructor(value: any = null, validator?: any, asyncValidator?: any) {
+  constructor(value: unknown = null, validator?: unknown, asyncValidator?: unknown) {
     this.value = value;
   }
   
-  setValue(value: any) {
+  setValue(value: unknown): void {
     this.value = value;
   }
   
-  patchValue(value: any) {
+  patchValue(value: unknown): void {
     this.value = value;
   }
   
-  get(path: string) {
+  get(path: string): FormControl | null {
     return null;
   }
 }
@@ -25,7 +27,7 @@ export class FormControl {
 export class FormGroup {
   controls: Record<string, FormControl> = {};
   
-  constructor(controls: Record<string, any>, options?: any) {
+  constructor(controls: Record<string, unknown>, options?: unknown) {
     this.controls = Object.keys(controls).reduce((acc, key) => {
       acc[key] = controls[key] instanceof FormControl ? controls[key] : new FormControl(controls[key]);
       return acc;
@@ -36,7 +38,7 @@ export class FormGroup {
     return this.controls[path] || null;
   }
   
-  setValue(value: any) {
+  setValue(value: Record<string, unknown>): void {
     Object.keys(value).forEach(key => {
       if (this.controls[key]) {
         this.controls[key].setValue(value[key]);
@@ -44,25 +46,25 @@ export class FormGroup {
     });
   }
   
-  patchValue(value: any) {
+  patchValue(value: Record<string, unknown>): void {
     this.setValue(value);
   }
 }
 
 export class FormBuilder {
-  control(formState: any, validatorOrOpts?: any, asyncValidator?: any): FormControl {
+  control(formState: unknown, validatorOrOpts?: unknown, asyncValidator?: unknown): FormControl {
     return new FormControl(formState, validatorOrOpts, asyncValidator);
   }
   
-  group(controlsConfig: any, options?: any): FormGroup {
+  group(controlsConfig: Record<string, unknown>, options?: unknown): FormGroup {
     return new FormGroup(controlsConfig, options);
   }
   
-  array() {
-    return {} as any;
+  array(): unknown {
+    return {} as unknown;
   }
   
-  record() {
-    return {} as any;
+  record(): unknown {
+    return {} as unknown;
   }
 }
