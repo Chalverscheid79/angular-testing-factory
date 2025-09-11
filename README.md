@@ -4,6 +4,9 @@
 > **Zero Mock Drift™ guarantee with compile-time validation**
 
 [![npm version](https://badge.fury.io/js/%40halverscheid-fiae.de%2Fangular-testing-factory.svg)](https://badge.fury.io/js/%40halverscheid-fiae.de%2Fangular-testing-factory)
+[![npm downloads](https://img.shields.io/npm/dt/@halverscheid-fiae.de/angular-testing-factory)](https://www.npmjs.com/package/@halverscheid-fiae.de/angular-testing-factory)
+[![license](https://img.shields.io/npm/l/@halverscheid-fiae.de/angular-testing-factory)](https://github.com/Chalverscheid79/angular-testing-factory/blob/main/LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@halverscheid-fiae.de/angular-testing-factory)](https://bundlephobia.com/package/@halverscheid-fiae.de/angular-testing-factory)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
 [![Jest](https://img.shields.io/badge/Jest-29+-green.svg)](https://jestjs.io/)
