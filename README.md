@@ -19,7 +19,8 @@
 - 🎯 **Zero Mock Drift™**: TypeScript `satisfies` catches mock inconsistencies at compile-time
 - ⚡ **One-Line Providers**: `provideHttpClientMock()` - Done!
 - 🚀 **Automated CI/CD**: Semantic versioning with automatic NPM publishing
-- 🧪 **100% Test Coverage**: All 88 tests pass with comprehensive coverage
+- 🧪 **100% Test Coverage**: All 88 tests pass with comprehensive coverage  
+- 🎯 **Squash & Merge**: PR-based workflow with semantic commit messages
 - 🔄 **Override Anything**: Per-test customization with the Factory Pattern
 - 🛡️ **100% Type Safe**: Full IntelliSense and compile-time validation
 - 📦 **Angular 20+ Native**: Signals, Standalone Components, modern inject()
