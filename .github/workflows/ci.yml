@@ -70,39 +70,6 @@ jobs:
     - name: Validate coverage before publish
       run: npm run test:coverage
       
-    - name: Get current version
-      id: current_version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      
-    - name: Auto-increment version based on commit messages
-      id: version_bump
-      run: |
-        # Check if commit contains breaking changes or features
-        if [[ "${{ github.event.head_commit.message }}" == *"BREAKING CHANGE"* || "${{ github.event.head_commit.message }}" =~ ^[a-z]+\!: ]]; then
-          echo "bump=major" >> $GITHUB_OUTPUT
-        elif [[ "${{ github.event.head_commit.message }}" == feat* ]]; then
-          echo "bump=minor" >> $GITHUB_OUTPUT
-        else
-          echo "bump=patch" >> $GITHUB_OUTPUT
-        fi
-        
-    - name: Bump version
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        npm version ${{ steps.version_bump.outputs.bump }} --no-git-tag-version
-        
-    - name: Get new version
-      id: new_version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-        
-    - name: Commit version bump
-      run: |
-        git add package.json package-lock.json
-        git commit -m "chore: bump version to ${{ steps.new_version.outputs.version }} [skip ci]"
-        git tag v${{ steps.new_version.outputs.version }}
-        git push origin main --tags
-    
     - name: Configure Git
       run: |
         git config --global user.name "github-actions[bot]"
