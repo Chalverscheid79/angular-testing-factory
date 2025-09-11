@@ -2,8 +2,11 @@
  * @fileoverview Type Definitions
  *
  * @description
- * Central type definitions für das Testing Framework
+ * Central type definitions for the Testing Framework
  */
+
+// Injection Tokens
+export * from './injection-tokens';
 
 /**
  * Mock-Return-Type Helper für bessere Typisierung

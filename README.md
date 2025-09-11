@@ -112,6 +112,37 @@ describe('Revenue Tests', () => {
 });
 ```
 
+### ✨ New: Angular Core Extensions
+
+```typescript
+// 🆕 Complete test setup in one line
+TestBed.configureTestingModule({
+  providers: provideAngularCoreMocks({
+    activatedRoute: {
+      snapshot: { params: { id: '123' } }
+    },
+    window: {
+      innerWidth: 1920,
+      localStorage: mockStorage()
+    }
+  })
+});
+
+// 🆕 Individual providers for specific needs
+TestBed.configureTestingModule({
+  providers: [
+    provideActivatedRouteMock({
+      params: of({ productId: '456' }),
+      queryParams: of({ tab: 'details' })
+    }),
+    provideFormBuilderMock(),
+    provideElementRefMock<HTMLInputElement>({
+      nativeElement: mockInputElement
+    })
+  ]
+});
+```
+
 ### The Magic: Zero Mock Drift™
 
 ```typescript
@@ -161,6 +192,20 @@ TestBed.configureTestingModule({
 - `provideRouterMock(overrides?)` - Router Mock  
 - `provideLocationMock(overrides?)` - Location Mock
 - `provideAngularCommonMocks()` - All Common Services
+
+#### Angular Core Extensions 🆕
+- `provideActivatedRouteMock(overrides?)` - ActivatedRoute Mock (Params, QueryParams, Data)
+- `provideFormBuilderMock(overrides?)` - FormBuilder Mock (Reactive Forms)
+- `provideDomSanitizerMock(overrides?)` - DomSanitizer Mock (Security Bypass)
+
+#### Browser API Mocks 🆕
+- `provideElementRefMock<T>(overrides?)` - ElementRef Mock with Generic Support
+- `provideDocumentMock(overrides?)` - Document Mock (DOM Operations)
+- `provideWindowMock(overrides?)` - Window Mock (Navigator, Storage, Location)
+
+#### Convenience Bundles 🆕
+- `provideAngularCoreMocks(overrides?)` - All Critical Angular Core Services
+- `provideAngularCommonMocks()` - Legacy Common Services Bundle
 
 #### Angular Material
 - `provideMatDialogMock(overrides?)` - MatDialog Mock
