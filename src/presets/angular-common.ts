@@ -246,10 +246,112 @@ export function provideDocumentMock(overrides?: Partial<Document>): Provider {
   return { provide: DOCUMENT_TOKEN, useValue: documentMock };
 }
 
-/** Window Mock Provider */
+/** Window Mock Provider for Token-based Injection */
 export function provideWindowMock(overrides?: Partial<Window & typeof globalThis>): Provider {
   const windowMock = { ...WINDOW_DEFAULTS, ...overrides };
   return { provide: WINDOW_TOKEN, useValue: windowMock };
+}
+
+/**
+ * Global Window Mock Setup
+ * Mocks the global window object for components that access window directly
+ * 
+ * @param overrides - Custom window properties to override
+ * @returns Cleanup function to restore original window
+ * 
+ * @example
+ * ```typescript
+ * describe('MyComponent', () => {
+ *   let cleanup: () => void;
+ *   
+ *   beforeEach(() => {
+ *     cleanup = setupGlobalWindowMock({
+ *       location: { href: 'http://test.com' },
+ *       localStorage: mockStorage
+ *     });
+ *   });
+ *   
+ *   afterEach(() => {
+ *     cleanup();
+ *   });
+ * });
+ * ```
+ */
+export function setupGlobalWindowMock(overrides?: Partial<Window & typeof globalThis>): () => void {
+  const windowMock = { ...WINDOW_DEFAULTS, ...overrides };
+  const originalWindow = global.window;
+  
+  // Mock global window
+  (global as any).window = windowMock;
+  
+  // Also mock globalThis for Node.js environments
+  if (typeof globalThis !== 'undefined') {
+    Object.defineProperty(globalThis, 'window', {
+      value: windowMock,
+      writable: true,
+      configurable: true
+    });
+  }
+  
+  // Return cleanup function
+  return () => {
+    if (originalWindow) {
+      global.window = originalWindow;
+    } else {
+      delete (global as any).window;
+    }
+    
+    if (typeof globalThis !== 'undefined') {
+      delete (globalThis as any).window;
+    }
+  };
+}
+
+/**
+ * Combined Window Mock Provider
+ * Provides both token-based and global window mocking
+ * 
+ * @param options - Configuration options
+ * @returns Provider array and cleanup function
+ * 
+ * @example
+ * ```typescript
+ * describe('MyComponent', () => {
+ *   let cleanup: () => void;
+ *   
+ *   beforeEach(() => {
+ *     const result = provideCompleteWindowMock({
+ *       overrides: { location: { href: 'http://test.com' } },
+ *       mockGlobal: true
+ *     });
+ *     
+ *     TestBed.configureTestingModule({
+ *       providers: result.providers
+ *     });
+ *     
+ *     cleanup = result.cleanup;
+ *   });
+ *   
+ *   afterEach(() => {
+ *     cleanup?.();
+ *   });
+ * });
+ * ```
+ */
+export function provideCompleteWindowMock(options?: {
+  overrides?: Partial<Window & typeof globalThis>;
+  mockGlobal?: boolean;
+}): { providers: Provider[]; cleanup?: () => void } {
+  const { overrides, mockGlobal = false } = options || {};
+  
+  const providers = [provideWindowMock(overrides)];
+  
+  if (mockGlobal) {
+    const cleanup = setupGlobalWindowMock(overrides);
+    return { providers, cleanup };
+  }
+  
+  return { providers };
 }
 
 /* ====================================

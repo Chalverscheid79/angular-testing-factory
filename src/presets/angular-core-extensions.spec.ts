@@ -1,5 +1,15 @@
 /**
- * @fileoverview Comprehensive Tests for Angular Core Extensions
+ * @fileovervimport {
+  provideActivatedRouteMock,
+  provideFormBuilderMock,
+  provideDomSanitizerMock,
+  provideElementRefMock,
+  provideDocumentMock,
+  provideWindowMock,
+  setupGlobalWindowMock,
+  provideCompleteWindowMock,
+  provideAngularCoreMocks
+} from './angular-common';ehensive Tests for Angular Core Extensions
  * 
  * @description
  * Complete test suite for all new providers to achieve 70%+ coverage.
@@ -22,6 +32,8 @@ import {
   provideElementRefMock,
   provideDocumentMock,
   provideWindowMock,
+  setupGlobalWindowMock,
+  provideCompleteWindowMock,
   provideAngularCoreMocks
 } from '../presets/angular-common';
 import { DOCUMENT_TOKEN, WINDOW_TOKEN } from '../types/injection-tokens';
@@ -912,6 +924,181 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(window).toBeDefined();
       expect(route.snapshot.params).toEqual({});
       expect(window.innerWidth).toBe(1024);
+    });
+  });
+
+  describe('setupGlobalWindowMock', () => {
+    it('should mock global window object', () => {
+      const cleanup = setupGlobalWindowMock({
+        location: { href: 'http://test.com' } as Location
+      });
+
+      expect((global as any).window).toBeDefined();
+      expect((global as any).window.location.href).toBe('http://test.com');
+
+      cleanup();
+    });
+
+    it('should restore original window after cleanup', () => {
+      const originalWindow = (global as any).window;
+      
+      const cleanup = setupGlobalWindowMock({
+        innerWidth: 800
+      });
+
+      expect((global as any).window.innerWidth).toBe(800);
+
+      cleanup();
+
+      if (originalWindow) {
+        expect((global as any).window).toBe(originalWindow);
+      } else {
+        expect((global as any).window).toBeUndefined();
+      }
+    });
+
+    it('should handle multiple window properties', () => {
+      const cleanup = setupGlobalWindowMock({
+        innerWidth: 500,
+        innerHeight: 300,
+        location: { href: 'http://example.com' } as Location,
+        localStorage: {
+          getItem: jest.fn().mockReturnValue('test-value'),
+          setItem: jest.fn(),
+          removeItem: jest.fn(),
+          clear: jest.fn(),
+          length: 0,
+          key: jest.fn()
+        } as Storage
+      });
+
+      const mockWindow = (global as any).window;
+      expect(mockWindow.innerWidth).toBe(500);
+      expect(mockWindow.innerHeight).toBe(300);
+      expect(mockWindow.location.href).toBe('http://example.com');
+      expect(mockWindow.localStorage.getItem('test')).toBe('test-value');
+
+      cleanup();
+    });
+
+    it('should work when no original window exists', () => {
+      const originalWindow = (global as any).window;
+      delete (global as any).window;
+
+      const cleanup = setupGlobalWindowMock({
+        innerWidth: 600
+      });
+
+      expect((global as any).window.innerWidth).toBe(600);
+
+      cleanup();
+      expect((global as any).window).toBeUndefined();
+
+      // Restore for other tests
+      if (originalWindow) {
+        (global as any).window = originalWindow;
+      }
+    });
+  });
+
+  describe('provideCompleteWindowMock', () => {
+    it('should provide token-based mock only', () => {
+      const result = provideCompleteWindowMock({
+        overrides: { innerWidth: 400 },
+        mockGlobal: false
+      });
+
+      expect(result.providers).toHaveLength(1);
+      expect(result.cleanup).toBeUndefined();
+
+      TestBed.configureTestingModule({
+        providers: result.providers
+      });
+
+      const window = TestBed.inject(WINDOW_TOKEN);
+      expect(window.innerWidth).toBe(400);
+    });
+
+    it('should provide both token-based and global mock', () => {
+      const result = provideCompleteWindowMock({
+        overrides: { innerWidth: 800 },
+        mockGlobal: true
+      });
+
+      expect(result.providers).toHaveLength(1);
+      expect(result.cleanup).toBeDefined();
+
+      TestBed.configureTestingModule({
+        providers: result.providers
+      });
+
+      const tokenWindow = TestBed.inject(WINDOW_TOKEN);
+      const globalWindow = (global as any).window;
+
+      expect(tokenWindow.innerWidth).toBe(800);
+      expect(globalWindow.innerWidth).toBe(800);
+
+      // Cleanup
+      result.cleanup?.();
+    });
+
+    it('should work with default options', () => {
+      const result = provideCompleteWindowMock();
+
+      expect(result.providers).toHaveLength(1);
+      expect(result.cleanup).toBeUndefined();
+
+      TestBed.configureTestingModule({
+        providers: result.providers
+      });
+
+      const window = TestBed.inject(WINDOW_TOKEN);
+      expect(window.innerWidth).toBe(1024); // Default value
+    });
+
+    it('should handle complex overrides with global mocking', () => {
+      const mockStorage: Storage = {
+        getItem: jest.fn().mockReturnValue('stored-value'),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+        length: 1,
+        key: jest.fn().mockReturnValue('test-key')
+      };
+
+      const result = provideCompleteWindowMock({
+        overrides: {
+          location: { 
+            href: 'http://complex-test.com',
+            search: '?param=value'
+          } as Location,
+          localStorage: mockStorage,
+          navigator: {
+            userAgent: 'Custom Test Agent'
+          } as Navigator
+        },
+        mockGlobal: true
+      });
+
+      TestBed.configureTestingModule({
+        providers: result.providers
+      });
+
+      const tokenWindow = TestBed.inject(WINDOW_TOKEN);
+      const globalWindow = (global as any).window;
+
+      // Test token-based access
+      expect(tokenWindow.location.href).toBe('http://complex-test.com');
+      expect(tokenWindow.localStorage.getItem('test')).toBe('stored-value');
+      expect(tokenWindow.navigator.userAgent).toBe('Custom Test Agent');
+
+      // Test global access
+      expect(globalWindow.location.href).toBe('http://complex-test.com');
+      expect(globalWindow.localStorage.getItem('test')).toBe('stored-value');
+      expect(globalWindow.navigator.userAgent).toBe('Custom Test Agent');
+
+      // Cleanup
+      result.cleanup?.();
     });
   });
 });

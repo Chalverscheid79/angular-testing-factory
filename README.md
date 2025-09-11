@@ -199,15 +199,44 @@ TestBed.configureTestingModule({
 - `provideDomSanitizerMock(overrides?)` - DomSanitizer Mock (Security Bypass)
 
 #### Browser API Mocks 🆕
+
 - `provideElementRefMock<T>(overrides?)` - ElementRef Mock with Generic Support
 - `provideDocumentMock(overrides?)` - Document Mock (DOM Operations)
-- `provideWindowMock(overrides?)` - Window Mock (Navigator, Storage, Location)
+- `provideWindowMock(overrides?)` - Window Mock for Token-based Injection
+- `setupGlobalWindowMock(overrides?)` - Global Window Mock for Direct Access 🔥
+- `provideCompleteWindowMock(options?)` - Combined Token + Global Window Mock 🔥
+
+#### 🌟 Advanced Window Mocking
+
+**Problem Solved:** Components using `window` directly vs. `WINDOW_TOKEN` injection
+
+```typescript
+// ❌ Traditional approach: Only works for token-based injection
+providers: [provideWindowMock({ innerWidth: 800 })]
+
+// ✅ New approach: Covers both use cases
+const { providers, cleanup } = provideCompleteWindowMock({
+  overrides: { innerWidth: 800 },
+  mockGlobal: true  // Also mocks global window object
+});
+
+TestBed.configureTestingModule({ providers });
+// cleanup() restores original window after tests
+```
+
+**Use Cases:**
+
+- **Token-based**: `inject(WINDOW_TOKEN)` in Angular services
+- **Direct access**: `window.innerWidth` in legacy components  
+- **Global mocking**: Testing code that accesses `window` directly
 
 #### Convenience Bundles 🆕
+
 - `provideAngularCoreMocks(overrides?)` - All Critical Angular Core Services
 - `provideAngularCommonMocks()` - Legacy Common Services Bundle
 
 #### Angular Material
+
 - `provideMatDialogMock(overrides?)` - MatDialog Mock
 - `provideMatSnackBarMock(overrides?)` - MatSnackBar Mock
 - `provideAngularMaterialMocks()` - All Material Services
