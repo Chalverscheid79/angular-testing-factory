@@ -413,9 +413,93 @@ describe('MyComponent', () => {
 
 **Error:** `TypeError: control.setParent is not a function`
 
-**Solution:** Already fixed in v1.2.0+ - update your package!
-```bash
-npm update @halverscheid-fiae.de/angular-testing-factory
+**Root Cause:** Jest needs to properly mock Angular Forms globally to avoid conflicts.
+
+**Complete Solution:**
+
+1. **Create jest.setup.js in your project root:**
+
+```javascript
+// jest.setup.js - Global Angular Forms Mock
+jest.mock('@angular/forms', () => {
+  const originalModule = jest.requireActual('@angular/forms');
+  
+  class MockFormControl {
+    constructor(formState, validatorOrOpts, asyncValidator) {
+      this.value = Array.isArray(formState) ? formState[0] : formState;
+      this.valid = true;
+      this.invalid = false;
+      this.errors = null;
+      this.setValue = jest.fn();
+      this.patchValue = jest.fn();
+      this.reset = jest.fn();
+      this.setParent = jest.fn(); // CRITICAL: This method must exist!
+      // Additional FormControl properties as needed
+    }
+  }
+
+  class MockFormGroup {
+    constructor(controlsConfig, options) {
+      this.controls = {};
+      this.value = {};
+      
+      if (controlsConfig) {
+        Object.keys(controlsConfig).forEach(key => {
+          const config = controlsConfig[key];
+          this.controls[key] = new MockFormControl(config);
+          // Ensure parent relationship
+          if (this.controls[key].setParent) {
+            this.controls[key].setParent = jest.fn();
+          }
+        });
+      }
+      
+      this.setValue = jest.fn();
+      this.patchValue = jest.fn();
+      this.get = jest.fn((path) => this.controls[path] || null);
+      this.setParent = jest.fn();
+    }
+  }
+
+  class MockFormBuilder {
+    control(formState, validatorOrOpts, asyncValidator) {
+      return new MockFormControl(formState, validatorOrOpts, asyncValidator);
+    }
+    group(controlsConfig, options) {
+      return new MockFormGroup(controlsConfig, options);
+    }
+  }
+
+  return {
+    ...originalModule,
+    FormControl: MockFormControl,
+    FormGroup: MockFormGroup,
+    FormBuilder: MockFormBuilder
+  };
+});
+```
+
+2. **Update jest.config.js:**
+
+```javascript
+// jest.config.js
+module.exports = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  // ... rest of your configuration
+};
+```
+
+3. **Alternative: Use our pre-configured provider:**
+
+```typescript
+import { provideAngularCommon } from 'angular-testing-factory';
+
+TestBed.configureTestingModule({
+  providers: [
+    provideAngularCommon(), // Includes setParent-aware FormBuilder
+    // ... your other providers
+  ]
+});
 ```
 
 ### SignalStore Testing

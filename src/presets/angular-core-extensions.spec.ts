@@ -220,31 +220,35 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(fb.record).toBeDefined();
     });
 
-    it('should create real FormControl instances with control method', () => {
+    it('should create mock FormControl instances with control method', () => {
       const fb = TestBed.inject(FormBuilder);
       
       // Test with simple value
       const control1 = fb.control('test value');
-      expect(control1).toBeInstanceOf(FormControl);
+      expect(control1).toBeDefined();
       expect(control1.value).toBe('test value');
+      expect(control1.setParent).toBeDefined(); // WICHTIG: setParent muss existieren!
       
       // Test with null
       const control2 = fb.control(null);
-      expect(control2).toBeInstanceOf(FormControl);
+      expect(control2).toBeDefined();
       expect(control2.value).toBeNull();
+      expect(control2.setParent).toBeDefined();
       
       // Test with number
       const control3 = fb.control(42);
-      expect(control3).toBeInstanceOf(FormControl);
+      expect(control3).toBeDefined();
       expect(control3.value).toBe(42);
+      expect(control3.setParent).toBeDefined();
       
       // Test with object
       const control4 = fb.control({ name: 'test' });
-      expect(control4).toBeInstanceOf(FormControl);
+      expect(control4).toBeDefined();
       expect(control4.value).toEqual({ name: 'test' });
+      expect(control4.setParent).toBeDefined();
     });
 
-    it('should create real FormGroup instances with group method', () => {
+    it('should create mock FormGroup instances with group method', () => {
       const fb = TestBed.inject(FormBuilder);
       
       const group = fb.group({
@@ -253,15 +257,19 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
         age: [30]
       });
       
-      expect(group).toBeInstanceOf(FormGroup);
-      expect(group.get('name')?.value).toEqual(['John Doe']); // Arrays from FormBuilder
-      expect(group.get('email')?.value).toEqual(['john@example.com']);
-      expect(group.get('age')?.value).toEqual([30]);
+      expect(group).toBeDefined();
+      expect(group.get('name')?.value).toBe('John Doe'); // Erste Element aus Array wird genommen
+      expect(group.get('email')?.value).toBe('john@example.com');
+      expect(group.get('age')?.value).toBe(30);
+      expect(group.setParent).toBeDefined(); // setParent muss existieren!
       
-      // Test group controls
-      expect(group.get('name')).toBeInstanceOf(FormControl);
-      expect(group.get('email')).toBeInstanceOf(FormControl);
-      expect(group.get('age')).toBeInstanceOf(FormControl);
+      // Test group controls - sollten auch setParent haben
+      expect(group.get('name')).toBeDefined();
+      expect(group.get('email')).toBeDefined();
+      expect(group.get('name')?.setParent).toBeDefined();
+      expect(group.get('email')?.setParent).toBeDefined();
+      expect(group.get('age')).toBeDefined();
+      expect(group.get('age')?.setParent).toBeDefined();
     });
 
     it('should handle FormGroup with FormControl instances', () => {
@@ -280,7 +288,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(group.get('email')).toBe(emailControl);
       expect(group.get('name')?.value).toBe('Custom Name');
       expect(group.get('email')?.value).toBe('custom@email.com');
-      expect(group.get('description')?.value).toEqual(['Default description']);
+      expect(group.get('description')?.value).toBe('Default description'); // Erstes Element aus Array
     });
 
     it('should return mock objects for array and record methods', () => {
@@ -312,7 +320,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(control.value).toBe('overridden value');
       
       const group = fb.group({ test: ['ignored'] });
-      expect(group).toBeInstanceOf(FormGroup);
+      expect(group).toBeDefined();
       expect(Object.keys(group.controls)).toEqual([]);
     });
 
@@ -323,8 +331,9 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       const asyncValidator = () => Promise.resolve(null);
       
       const control = fb.control('test', validator, asyncValidator);
-      expect(control).toBeInstanceOf(FormControl);
+      expect(control).toBeDefined();
       expect(control.value).toBe('test');
+      expect(control.setParent).toBeDefined(); // setParent muss existieren!
     });
   });
 

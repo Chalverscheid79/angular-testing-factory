@@ -23,12 +23,12 @@ import { DOCUMENT_TOKEN, WINDOW_TOKEN } from '../types/injection-tokens';
  * ==================================== */
 
 // Mock ParamMap for ActivatedRoute
-const createMockParamMap = (params: Record<string, string | string[]> = {}): ParamMap => ({
+const createMockParamMap = (params: Record<string, string | string[]> = {}) => ({
   get: jest.fn((key: string) => params[key]?.toString() || null),
   getAll: jest.fn((key: string) => Array.isArray(params[key]) ? params[key] as string[] : [params[key]?.toString()].filter(Boolean)),
-  has: jest.fn((key: string) => key in params),
+  has: jest.fn((key: string) => Object.prototype.hasOwnProperty.call(params, key)),
   keys: Object.keys(params)
-});
+} satisfies jest.Mocked<Partial<ParamMap>>);
 
 const ACTIVATED_ROUTE_DEFAULTS = {
   snapshot: {
@@ -65,17 +65,188 @@ const ACTIVATED_ROUTE_DEFAULTS = {
   firstChild: null,
   children: [],
   pathFromRoot: []
-} satisfies Partial<ActivatedRoute>;
+} satisfies jest.Mocked<Partial<ActivatedRoute>>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// FormBuilder Mock - elegant mit jest.Mocked<Partial<FormBuilder>>
+// Das ist die RICHTIGE Lösung, die Christian vorgeschlagen hat!
 const FORM_BUILDER_DEFAULTS = {
-  control: jest.fn((formState: any, validatorOrOpts?: any, asyncValidator?: any) => 
-    new FormControl(formState, validatorOrOpts, asyncValidator)) as any,
-  group: jest.fn((controlsConfig: any, options?: any) => 
-    new FormGroup(controlsConfig, options)) as any,
-  array: jest.fn(() => ({} as any)) as any,
-  record: jest.fn(() => ({} as any)) as any
-} satisfies Partial<FormBuilder>;
+  control: jest.fn((formState: any, validatorOrOpts?: any, asyncValidator?: any) => ({
+    value: Array.isArray(formState) ? formState[0] : formState,
+    valid: true,
+    invalid: false,
+    pending: false,
+    disabled: false,
+    enabled: true,
+    errors: null,
+    pristine: true,
+    dirty: false,
+    touched: false,
+    untouched: true,
+    parent: null,
+    setValue: jest.fn(),
+    patchValue: jest.fn(),
+    reset: jest.fn(),
+    get: jest.fn(),
+    markAsTouched: jest.fn(),
+    markAsUntouched: jest.fn(),
+    markAsDirty: jest.fn(),
+    markAsPristine: jest.fn(),
+    markAsPending: jest.fn(),
+    setErrors: jest.fn(),
+    getError: jest.fn(),
+    hasError: jest.fn(),
+    updateValueAndValidity: jest.fn(),
+    setParent: jest.fn(), // KRITISCH: setParent() muss existieren!
+    statusChanges: { subscribe: jest.fn() },
+    valueChanges: { subscribe: jest.fn() },
+    disable: jest.fn(),
+    enable: jest.fn(),
+    addValidators: jest.fn(),
+    removeValidators: jest.fn(),
+    clearValidators: jest.fn(),
+    addAsyncValidators: jest.fn(),
+    removeAsyncValidators: jest.fn(),
+    clearAsyncValidators: jest.fn(),
+    status: 'VALID',
+    getRawValue: jest.fn(),
+    defaultValue: undefined
+  })),
+  
+  group: jest.fn((controlsConfig: any, options?: any) => {
+    const controls: Record<string, any> = {};
+    const value: Record<string, any> = {};
+    
+    if (controlsConfig) {
+      Object.keys(controlsConfig).forEach(key => {
+        const config = controlsConfig[key];
+        
+        if (config && typeof config === 'object' && 'setValue' in config) {
+          controls[key] = config;
+          value[key] = config.value;
+        } else if (Array.isArray(config)) {
+          const controlValue = config[0];
+          controls[key] = FORM_BUILDER_DEFAULTS.control!(controlValue);
+          value[key] = controlValue;
+        } else {
+          controls[key] = FORM_BUILDER_DEFAULTS.control!(config);
+          value[key] = config;
+        }
+        
+        // Stelle sicher, dass setParent verfügbar ist
+        if (controls[key] && typeof controls[key].setParent !== 'function') {
+          controls[key].setParent = jest.fn();
+        }
+      });
+    }
+
+    return {
+      controls,
+      value,
+      valid: true,
+      invalid: false,
+      pending: false,
+      disabled: false,
+      enabled: true,
+      errors: null,
+      pristine: true,
+      dirty: false,
+      touched: false,
+      untouched: true,
+      parent: null,
+      setValue: jest.fn(),
+      patchValue: jest.fn(),
+      reset: jest.fn(),
+      get: jest.fn((path: string) => controls[path] || null),
+      addControl: jest.fn(),
+      removeControl: jest.fn(),
+      setControl: jest.fn(),
+      contains: jest.fn(),
+      markAsTouched: jest.fn(),
+      markAsUntouched: jest.fn(),
+      markAsDirty: jest.fn(),
+      markAsPristine: jest.fn(),
+      updateValueAndValidity: jest.fn(),
+      setParent: jest.fn(),
+      statusChanges: { subscribe: jest.fn() },
+      valueChanges: { subscribe: jest.fn() },
+      disable: jest.fn(),
+      enable: jest.fn(),
+      getRawValue: jest.fn(),
+      status: 'VALID'
+    };
+  }),
+  
+  array: jest.fn((controls: any, validatorOrOpts?: any, asyncValidator?: any) => ({
+    controls: Array.isArray(controls) ? controls : [],
+    length: Array.isArray(controls) ? controls.length : 0,
+    at: jest.fn(),
+    push: jest.fn(),
+    insert: jest.fn(),
+    removeAt: jest.fn(),
+    setControl: jest.fn(),
+    setValue: jest.fn(),
+    patchValue: jest.fn(),
+    reset: jest.fn(),
+    value: [],
+    valid: true,
+    invalid: false,
+    pending: false,
+    disabled: false,
+    enabled: true,
+    errors: null,
+    pristine: true,
+    dirty: false,
+    touched: false,
+    untouched: true,
+    markAsTouched: jest.fn(),
+    markAsUntouched: jest.fn(),
+    markAsDirty: jest.fn(),
+    markAsPristine: jest.fn(),
+    updateValueAndValidity: jest.fn(),
+    get: jest.fn(),
+    clear: jest.fn(),
+    statusChanges: { subscribe: jest.fn() },
+    valueChanges: { subscribe: jest.fn() },
+    disable: jest.fn(),
+    enable: jest.fn(),
+    getRawValue: jest.fn(),
+    status: 'VALID'
+  })),
+  
+  record: jest.fn((controls: any, validatorOrOpts?: any) => ({
+    controls: controls || {},
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    setControl: jest.fn(),
+    contains: jest.fn(),
+    setValue: jest.fn(),
+    patchValue: jest.fn(),
+    reset: jest.fn(),
+    value: {},
+    valid: true,
+    invalid: false,
+    pending: false,
+    disabled: false,
+    enabled: true,
+    errors: null,
+    pristine: true,
+    dirty: false,
+    touched: false,
+    untouched: true,
+    markAsTouched: jest.fn(),
+    markAsUntouched: jest.fn(),
+    markAsDirty: jest.fn(),
+    markAsPristine: jest.fn(),
+    updateValueAndValidity: jest.fn(),
+    get: jest.fn(),
+    statusChanges: { subscribe: jest.fn() },
+    valueChanges: { subscribe: jest.fn() },
+    disable: jest.fn(),
+    enable: jest.fn(),
+    getRawValue: jest.fn(),
+    status: 'VALID'
+  }))
+} satisfies Record<keyof Pick<FormBuilder, 'control' | 'group' | 'array' | 'record'>, jest.Mock>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DOM_SANITIZER_DEFAULTS = {
@@ -85,17 +256,17 @@ const DOM_SANITIZER_DEFAULTS = {
   bypassSecurityTrustScript: jest.fn((value: string) => ({ __script: value } as SafeScript)),
   bypassSecurityTrustUrl: jest.fn((value: string) => ({ __url: value } as SafeUrl)),
   bypassSecurityTrustResourceUrl: jest.fn((value: string) => ({ __resourceUrl: value } as SafeResourceUrl))
-} satisfies Partial<DomSanitizer>;
+} satisfies jest.Mocked<Partial<DomSanitizer>>;
 
 // Browser API Mocks
-const createMockStorage = (): Storage => ({
+const createMockStorage = () => ({
   length: 0,
   clear: jest.fn(),
   getItem: jest.fn(() => null),
   setItem: jest.fn(),
   removeItem: jest.fn(),
   key: jest.fn(() => null)
-});
+} satisfies jest.Mocked<Partial<Storage>>);
 
 const ELEMENT_REF_DEFAULTS = <T = HTMLElement>(): ElementRef<T> => ({
   nativeElement: {
@@ -109,9 +280,9 @@ const ELEMENT_REF_DEFAULTS = <T = HTMLElement>(): ElementRef<T> => ({
       toJSON: () => ({})
     }))
   } as any
-});
+} satisfies jest.Mocked<Partial<ElementRef<T>>>);
 
-const DOCUMENT_DEFAULTS: Partial<Document> = {
+const DOCUMENT_DEFAULTS = {
   createElement: jest.fn(() => ({
     setAttribute: jest.fn(),
     getAttribute: jest.fn(),
@@ -138,9 +309,9 @@ const DOCUMENT_DEFAULTS: Partial<Document> = {
       toggle: jest.fn()
     }
   } as any
-};
+} satisfies jest.Mocked<Partial<Document>>;
 
-const WINDOW_DEFAULTS: Partial<Window & typeof globalThis> = {
+const WINDOW_DEFAULTS = {
   navigator: {
     share: jest.fn(),
     clipboard: { 
@@ -172,9 +343,9 @@ const WINDOW_DEFAULTS: Partial<Window & typeof globalThis> = {
   alert: jest.fn(),
   confirm: jest.fn(() => true),
   prompt: jest.fn(() => null)
-};
+} satisfies jest.Mocked<Partial<Window & typeof globalThis>>;
 
-const HTTP_CLIENT_DEFAULTS: Partial<jest.Mocked<HttpClient>> = {
+const HTTP_CLIENT_DEFAULTS = {
   get: jest.fn(() => of({})) as any,
   post: jest.fn(() => of({})) as any,
   put: jest.fn(() => of({})) as any,
@@ -183,9 +354,9 @@ const HTTP_CLIENT_DEFAULTS: Partial<jest.Mocked<HttpClient>> = {
   head: jest.fn(() => of({})) as any,
   options: jest.fn(() => of({})) as any,
   request: jest.fn(() => of({})) as any
-};
+} satisfies jest.Mocked<Partial<HttpClient>>;
 
-const ROUTER_DEFAULTS: Partial<jest.Mocked<Router>> = {
+const ROUTER_DEFAULTS = {
   navigate: jest.fn(() => Promise.resolve(true)) as any,
   navigateByUrl: jest.fn(() => Promise.resolve(true)) as any,
   createUrlTree: jest.fn(() => ({} as any)) as any,
@@ -193,9 +364,9 @@ const ROUTER_DEFAULTS: Partial<jest.Mocked<Router>> = {
   parseUrl: jest.fn(() => ({} as any)) as any,
   isActive: jest.fn(() => false) as any,
   events: EMPTY as any
-};
+} satisfies jest.Mocked<Partial<Router>>;
 
-const LOCATION_DEFAULTS: Partial<jest.Mocked<Location>> = {
+const LOCATION_DEFAULTS = {
   back: jest.fn() as any,
   forward: jest.fn() as any,
   go: jest.fn() as any,
@@ -206,7 +377,7 @@ const LOCATION_DEFAULTS: Partial<jest.Mocked<Location>> = {
   prepareExternalUrl: jest.fn((url: string) => url) as any,
   path: jest.fn(() => '') as any,
   subscribe: jest.fn(() => ({ unsubscribe: jest.fn(), closed: false })) as any
-};
+} satisfies jest.Mocked<Partial<Location>>;
 
 /* ====================================
  * PUBLIC API: PROVIDER FACTORIES
