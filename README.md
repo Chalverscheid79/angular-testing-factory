@@ -112,6 +112,46 @@ describe('Revenue Tests', () => {
 });
 ```
 
+## 🚀 Quick Migration Guide
+
+### From Manual Window Mocking
+
+```typescript
+// ❌ Before: Manual & Error-prone
+beforeEach(() => {
+  (global as any).window = {
+    innerWidth: 1024,
+    addEventListener: jest.fn(),
+    // Missing tons of properties...
+  };
+});
+
+// ✅ After: Complete & Type-safe
+beforeEach(() => {
+  const { providers, cleanup } = provideCompleteWindowMock({
+    overrides: { innerWidth: 1024 },
+    mockGlobal: true
+  });
+  
+  TestBed.configureTestingModule({ providers });
+  cleanup = windowCleanup;
+});
+```
+
+### From Direct Injection Errors
+
+```typescript
+// ❌ Before: Runtime Injection Errors
+TestBed.inject(Window); // NG0201 Error!
+TestBed.inject(Document); // NG0201 Error!
+
+// ✅ After: Proper Token Usage
+import { WINDOW_TOKEN, DOCUMENT_TOKEN } from '@halverscheid-fiae.de/angular-testing-factory';
+
+TestBed.inject(WINDOW_TOKEN); // ✅ Works!
+TestBed.inject(DOCUMENT_TOKEN); // ✅ Works!
+```
+
 ### ✨ New: Angular Core Extensions
 
 ```typescript
@@ -224,6 +264,73 @@ TestBed.configureTestingModule({ providers });
 // cleanup() restores original window after tests
 ```
 
+**Common Use Cases & Solutions:**
+
+**❌ Problem:** `ɵNotFound: NG0201: No provider found for Window`
+```typescript
+// Wrong - Window is not an Angular token
+windowMock = TestBed.inject(Window);
+```
+
+**✅ Solution 1:** Use WINDOW_TOKEN for token-based injection
+```typescript
+import { WINDOW_TOKEN, provideWindowMock } from '@halverscheid-fiae.de/angular-testing-factory';
+
+beforeEach(() => {
+  TestBed.configureTestingModule({
+    providers: [provideWindowMock({ innerWidth: 1200 })]
+  });
+  
+  windowMock = TestBed.inject(WINDOW_TOKEN); // ✅ Correct token
+});
+```
+
+**✅ Solution 2:** Complete Window mocking (recommended)
+```typescript
+import { provideCompleteWindowMock, WINDOW_TOKEN } from '@halverscheid-fiae.de/angular-testing-factory';
+
+describe('MyComponent', () => {
+  let cleanup: (() => void) | undefined;
+
+  beforeEach(() => {
+    const result = provideCompleteWindowMock({
+      overrides: { innerWidth: 1200, location: { href: 'http://test.com' } },
+      mockGlobal: true // Mocks both token and global access
+    });
+    
+    cleanup = result.cleanup;
+
+    TestBed.configureTestingModule({
+      providers: result.providers
+    });
+    
+    // Both work now:
+    windowMock = TestBed.inject(WINDOW_TOKEN); // Token-based
+    // window.innerWidth also works in component code
+  });
+
+  afterEach(() => {
+    cleanup?.(); // Clean up global window mock
+  });
+});
+```
+
+**✅ Solution 3:** Component injection pattern
+```typescript
+// In your component - use token-based injection:
+import { inject } from '@angular/core';
+import { WINDOW_TOKEN } from '@halverscheid-fiae.de/angular-testing-factory';
+
+@Component({...})
+export class MyComponent {
+  private window = inject(WINDOW_TOKEN);
+  
+  onResize() {
+    const width = this.window.innerWidth; // ✅ Testable
+  }
+}
+```
+
 **Use Cases:**
 
 - **Token-based**: `inject(WINDOW_TOKEN)` in Angular services
@@ -261,7 +368,63 @@ export const provideMyServiceMock = (overrides = {}) =>
   createMockProvider(MyService, createMockMyService(overrides));
 ```
 
-## 🔍 SignalStore Testing
+## � Common Issues & Solutions
+
+### Window/Document Injection Problems
+
+**Error:** `ɵNotFound: NG0201: No provider found for Window`
+
+**Quick Fix:**
+```typescript
+// ❌ Wrong
+TestBed.inject(Window);
+TestBed.inject(Document);
+
+// ✅ Correct
+import { WINDOW_TOKEN, DOCUMENT_TOKEN } from '@halverscheid-fiae.de/angular-testing-factory';
+
+TestBed.inject(WINDOW_TOKEN);
+TestBed.inject(DOCUMENT_TOKEN);
+```
+
+**Complete Solution:**
+```typescript
+import { provideCompleteWindowMock } from '@halverscheid-fiae.de/angular-testing-factory';
+
+describe('MyComponent', () => {
+  let cleanup: (() => void) | undefined;
+
+  beforeEach(() => {
+    const { providers, cleanup: windowCleanup } = provideCompleteWindowMock({
+      mockGlobal: true
+    });
+    cleanup = windowCleanup;
+
+    TestBed.configureTestingModule({
+      providers: [...providers, /* other providers */]
+    });
+  });
+
+  afterEach(() => cleanup?.());
+});
+```
+
+### FormBuilder Validation Errors
+
+**Error:** `TypeError: control.setParent is not a function`
+
+**Solution:** Already fixed in v1.2.0+ - update your package!
+```bash
+npm update @halverscheid-fiae.de/angular-testing-factory
+```
+
+### SignalStore Testing
+
+**Error:** Cannot spy on SignalStore methods directly
+
+**Solution:**
+
+## �🔍 SignalStore Testing
 
 ```typescript
 // ❌ This does NOT work with SignalStores:
@@ -271,6 +434,23 @@ const spy = jest.spyOn(store.myService, 'getData'); // Error!
 const mockService = TestBed.inject(MyService); // After TestBed setup
 const spy = jest.spyOn(mockService, 'getData');
 ```
+
+## 🔧 Troubleshooting Guide
+
+### Missing Provider Errors
+- Use `WINDOW_TOKEN` instead of `Window`
+- Use `DOCUMENT_TOKEN` instead of `Document`
+- Ensure all mocks are provided in TestBed configuration
+
+### Mock Not Working
+- Check import statements - ensure you're importing from the correct package
+- Verify TypeScript configuration allows proper jest mocking
+- Use `provideCompleteWindowMock` for complex window scenarios
+
+### Performance Issues
+- Use `setupGlobalWindowMock` only when necessary
+- Clean up global mocks in `afterEach()` hooks
+- Consider using token-based injection for better performance
 
 ## 💡 Why This Library?
 
