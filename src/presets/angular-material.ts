@@ -2,10 +2,10 @@
  * @fileoverview Angular Material Service Presets
  *
  * @description
- * Ready-to-use Mocks für Angular Material Services
- * wie MatDialog, MatSnackBar etc.
+ * Ready-to-use Mocks for Angular Material Services
+ * like MatDialog, MatSnackBar etc.
  * 
- * @note Falls @angular/material nicht verfügbar ist, werden Fallback-Mocks bereitgestellt
+ * @note If @angular/material is not available, fallback mocks are provided
  */
 
 import { of, EMPTY } from 'rxjs';
@@ -88,16 +88,16 @@ const MAT_SNACK_BAR_TOKEN = 'MAT_SNACK_BAR_MOCK';
  * PUBLIC API: PROVIDER FACTORIES
  * ==================================== */
 
-/** Angular Provider für MatDialog Mock */
+/** Angular Provider for MatDialog Mock */
 export const provideMatDialogMock = (overrides: Partial<jest.Mocked<MockMatDialog>> = {}): Provider =>
   createServiceProviderFactory(MAT_DIALOG_TOKEN, MAT_DIALOG_DEFAULTS)(overrides);
 
-/** Angular Provider für MatSnackBar Mock */
+/** Angular Provider for MatSnackBar Mock */
 export const provideMatSnackBarMock = (overrides: Partial<jest.Mocked<MockMatSnackBar>> = {}): Provider =>
   createServiceProviderFactory(MAT_SNACK_BAR_TOKEN, MAT_SNACK_BAR_DEFAULTS)(overrides);
 
 /**
- * Convenience Provider für alle Angular Material Services
+ * Convenience Provider for all Angular Material Services
  */
 export const provideAngularMaterialMocks = (): Provider[] => [
   provideMatDialogMock(),

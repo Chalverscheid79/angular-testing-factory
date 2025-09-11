@@ -2,8 +2,8 @@
  * @fileoverview Angular Common Service Presets
  *
  * @description
- * Ready-to-use Mocks für häufige Angular Common Services
- * wie HttpClient, Router, Location etc.
+ * Ready-to-use Mocks for common Angular Common Services
+ * like HttpClient, Router, Location etc.
  */
 
 /* eslint-disable no-undef */
@@ -212,22 +212,22 @@ const LOCATION_DEFAULTS: Partial<jest.Mocked<Location>> = {
  * PUBLIC API: PROVIDER FACTORIES
  * ==================================== */
 
-/** Angular Provider für HttpClient Mock */
+/** Angular Provider for HttpClient Mock */
 export const provideHttpClientMock = createServiceProviderFactory(HttpClient, HTTP_CLIENT_DEFAULTS);
 
-/** Angular Provider für Router Mock */
+/** Angular Provider for Router Mock */
 export const provideRouterMock = createServiceProviderFactory(Router, ROUTER_DEFAULTS);
 
-/** Angular Provider für Location Mock */
+/** Angular Provider for Location Mock */
 export const provideLocationMock = createServiceProviderFactory(Location, LOCATION_DEFAULTS);
 
-/** Angular Provider für ActivatedRoute Mock - Höchste Priorität */
+/** Angular Provider for ActivatedRoute Mock - Highest Priority */
 export const provideActivatedRouteMock = createServiceProviderFactory(ActivatedRoute, ACTIVATED_ROUTE_DEFAULTS);
 
-/** Angular Provider für FormBuilder Mock */
+/** Angular Provider for FormBuilder Mock */
 export const provideFormBuilderMock = createServiceProviderFactory(FormBuilder, FORM_BUILDER_DEFAULTS);
 
-/** Angular Provider für DomSanitizer Mock */
+/** Angular Provider for DomSanitizer Mock */
 export const provideDomSanitizerMock = createServiceProviderFactory(DomSanitizer, DOM_SANITIZER_DEFAULTS);
 
 /* ====================================
@@ -278,7 +278,7 @@ export function provideAngularCoreMocks(overrides?: {
 }
 
 /**
- * Convenience Provider für alle Angular Common Services (Legacy)
+ * Convenience Provider for all Angular Common Services (Legacy)
  */
 export const provideAngularCommonMocks = (): Provider[] => [
   provideHttpClientMock(),

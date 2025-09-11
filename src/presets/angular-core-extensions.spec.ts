@@ -1,9 +1,9 @@
 /**
- * @fileoverview Comprehensive Tests für Angular Core Extensions
+ * @fileoverview Comprehensive Tests for Angular Core Extensions
  * 
  * @description
- * Vollständige Test-Suite für alle neuen Provider um 70%+ Coverage zu erreichen.
- * Testet: ActivatedRoute, FormBuilder, DomSanitizer, ElementRef, Document, Window, Core Bundle
+ * Complete test suite for all new providers to achieve 70%+ coverage.
+ * Tests: ActivatedRoute, FormBuilder, DomSanitizer, ElementRef, Document, Window, Core Bundle
  */
 
 /* eslint-disable no-undef */

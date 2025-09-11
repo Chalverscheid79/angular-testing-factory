@@ -1,13 +1,13 @@
 /**
- * @fileoverview Injection Tokens für Mock-Provider
+ * @fileoverview Injection Tokens for Mock-Provider
  */
 
 /* eslint-disable no-undef */
 
 import { InjectionToken } from '@angular/core';
 
-/** Injection Token für Document */
+/** Injection Token for Document */
 export const DOCUMENT_TOKEN = new InjectionToken<Document>('DOCUMENT');
 
-/** Injection Token für Window */
+/** Injection Token for Window */
 export const WINDOW_TOKEN = new InjectionToken<Window & typeof globalThis>('WINDOW');

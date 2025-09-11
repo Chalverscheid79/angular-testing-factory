@@ -2,7 +2,7 @@
  * @fileoverview Type Definitions
  *
  * @description
- * Central type definitions für das Testing Framework
+ * Central type definitions for the Testing Framework
  */
 
 // Injection Tokens
