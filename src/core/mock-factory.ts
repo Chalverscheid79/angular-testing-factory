@@ -17,8 +17,8 @@
  * @version 1.0.0
  */
 
-import { vi } from 'vitest';
 import { Provider } from '@angular/core';
+import type { Mock } from 'vitest';
 
 /* ====================================
  * 📦 CORE SYSTEM (INTERNAL)
