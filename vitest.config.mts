@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     include: ['src/**/*.spec.ts'],
-    setupFiles: ['./vitest.setup.ts'],
+    setupFiles: ['./vitest.setup.mts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
