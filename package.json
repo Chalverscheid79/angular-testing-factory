@@ -14,6 +14,7 @@
   ],
   "author": "Christian Halverscheid",
   "license": "MIT",
+  "type": "module",
   "homepage": "https://github.com/Chalverscheid79/angular-testing-factory#readme",
   "repository": {
     "type": "git",
@@ -22,9 +23,16 @@
   "bugs": {
     "url": "https://github.com/Chalverscheid79/angular-testing-factory/issues"
   },
-  "main": "dist/index.js",
+  "main": "dist/index.esm.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "default": "./dist/index.esm.js"
+    }
+  },
   "files": [
     "dist",
     "README.md",

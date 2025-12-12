@@ -34,24 +34,6 @@ const config = [
     external: externals
   },
   
-  // CommonJS Build
-  {
-    input: 'src/index.ts',
-    output: {
-      file: 'dist/index.js',
-      format: 'cjs',
-      sourcemap: true
-    },
-    plugins: [
-      typescript({
-        tsconfig: './tsconfig.json',
-        declaration: false,
-        sourceMap: true
-      })
-    ],
-    external: externals
-  },
-  
   // Types Bundle
   {
     input: 'src/index.ts',
