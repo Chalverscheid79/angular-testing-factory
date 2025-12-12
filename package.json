@@ -44,6 +44,10 @@
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "release": "semantic-release"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "peerDependencies": {
     "@angular/cdk": ">=21.0.0",
     "@angular/common": ">=21.0.0",
