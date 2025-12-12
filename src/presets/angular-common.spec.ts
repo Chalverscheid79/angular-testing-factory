@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import {
   provideHttpClientMock,
   provideRouterMock,
@@ -22,7 +23,7 @@ describe('Angular Common Presets', () => {
     });
 
     it('should apply overrides correctly', () => {
-      const mockGet = jest.fn(() => 'custom-response');
+      const mockGet = vi.fn(() => 'custom-response');
       const provider = provideHttpClientMock({
         get: mockGet as any
       }) as any;
@@ -71,7 +72,7 @@ describe('Angular Common Presets', () => {
     });
 
     it('should apply overrides correctly', () => {
-      const mockNavigate = jest.fn(() => Promise.resolve(false));
+      const mockNavigate = vi.fn(() => Promise.resolve(false));
       const provider = provideRouterMock({
         navigate: mockNavigate as any
       }) as any;
@@ -124,7 +125,7 @@ describe('Angular Common Presets', () => {
     });
 
     it('should apply overrides correctly', () => {
-      const mockBack = jest.fn();
+      const mockBack = vi.fn();
       const provider = provideLocationMock({
         back: mockBack as any
       }) as any;
@@ -204,10 +205,10 @@ describe('Angular Common Presets', () => {
   describe('Provider Factory Pattern', () => {
     it('should create new instances with different overrides', () => {
       const provider1 = provideHttpClientMock({ 
-        get: jest.fn(() => 'response1') as any 
+        get: vi.fn(() => 'response1') as any 
       }) as any;
       const provider2 = provideHttpClientMock({ 
-        get: jest.fn(() => 'response2') as any 
+        get: vi.fn(() => 'response2') as any 
       }) as any;
       
       expect(provider1.useValue.get()).toBe('response1');
@@ -217,7 +218,7 @@ describe('Angular Common Presets', () => {
 
     it('should preserve default methods when overriding', () => {
       const provider = provideHttpClientMock({
-        get: jest.fn(() => 'custom-get') as any
+        get: vi.fn(() => 'custom-get') as any
       }) as any;
       
       // Overridden method
@@ -230,7 +231,7 @@ describe('Angular Common Presets', () => {
     });
 
     it('should handle complex router navigation scenarios', async () => {
-      const customNavigate = jest.fn().mockImplementation((commands) => {
+      const customNavigate = vi.fn().mockImplementation((commands) => {
         return Promise.resolve(commands.includes('success'));
       });
       
@@ -252,8 +253,8 @@ describe('Angular Common Presets', () => {
       let currentState = { page: 1 };
       
       const provider = provideLocationMock({
-        getState: jest.fn(() => currentState) as any,
-        replaceState: jest.fn((state) => { currentState = { ...currentState, ...state }; }) as any
+        getState: vi.fn(() => currentState) as any,
+        replaceState: vi.fn((state) => { currentState = { ...currentState, ...state }; }) as any
       }) as any;
       
       const locationMock = provider.useValue;

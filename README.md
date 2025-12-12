@@ -1,6 +1,6 @@
 # @halverscheid-fiae.de/angular-testing-factory
 
-> **Revolutionary type-safe Angular service mocking for Angular 20+**  
+> **Revolutionary type-safe Angular service mocking for Angular 21+**  
 > **Zero Mock Drift™ guarantee with compile-time validation**
 
 [![npm version](https://badge.fury.io/js/%40halverscheid-fiae.de%2Fangular-testing-factory.svg)](https://badge.fury.io/js/%40halverscheid-fiae.de%2Fangular-testing-factory)
@@ -8,8 +8,8 @@
 [![license](https://img.shields.io/npm/l/@halverscheid-fiae.de/angular-testing-factory)](https://github.com/Chalverscheid79/angular-testing-factory/blob/main/LICENSE)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/@halverscheid-fiae.de/angular-testing-factory)](https://bundlephobia.com/package/@halverscheid-fiae.de/angular-testing-factory)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![Angular](https://img.shields.io/badge/Angular-20+-red.svg)](https://angular.io/)
-[![Jest](https://img.shields.io/badge/Jest-29+-green.svg)](https://jestjs.io/)
+[![Angular](https://img.shields.io/badge/Angular-21+-red.svg)](https://angular.io/)
+[![Vitest](https://img.shields.io/badge/Vitest-4+-green.svg)](https://vitest.dev/)
 
 ## 🎯 Why This Library?
 
@@ -22,12 +22,12 @@
 - 🎯 **Zero Mock Drift™**: TypeScript `satisfies` catches mock inconsistencies at compile-time
 - ⚡ **One-Line Providers**: `provideHttpClientMock()` - Done!
 - 🚀 **Automated CI/CD**: Semantic versioning with automatic NPM publishing
-- 🧪 **100% Test Coverage**: All 88 tests pass with comprehensive coverage  
-- 🎯 **Squash & Merge**: PR-based workflow with semantic commit messages
+- 🧪 **100% Test Coverage**: All 148 tests pass with comprehensive coverage  
+- 🎯 **Vitest Native**: Fast, modern testing with Vitest 4+
 - 🔄 **Override Anything**: Per-test customization with the Factory Pattern
 - 🛡️ **100% Type Safe**: Full IntelliSense and compile-time validation
-- 📦 **Angular 20+ Native**: Signals, Standalone Components, modern inject()
-- � **Zero Config**: Works out-of-the-box with sensible defaults
+- 📦 **Angular 21+ Native**: Signals, Standalone Components, modern inject()
+- ⚙️ **Zero Config**: Works out-of-the-box with sensible defaults
 
 ## 🚀 Quick Start
 
@@ -40,6 +40,7 @@ npm install --save-dev @halverscheid-fiae.de/angular-testing-factory
 ### 90% Use Case: Preset Collections
 
 ```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { 
   provideHttpClientMock, 
@@ -69,10 +70,13 @@ describe('MyComponent', () => {
 ### Create Once, Override Everywhere
 
 ```typescript
+import { vi } from 'vitest';
+import { of, signal } from 'rxjs';
+
 // 1. Create your factory ONCE (in test-setup.ts or similar)
 const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessService, {
-  calculateRevenue: jest.fn(() => of(1000)),
-  processPayment: jest.fn(() => Promise.resolve(false)),
+  calculateRevenue: vi.fn(() => of(1000)),
+  processPayment: vi.fn(() => Promise.resolve(false)),
   currentUser: signal({ id: 1, name: 'Test User' }),
   isLoading: signal(false)
 });
@@ -83,7 +87,7 @@ describe('Revenue Tests', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMyBusinessServiceMock({ 
-          calculateRevenue: jest.fn(() => of(50000)) // ← Override just this!
+          calculateRevenue: vi.fn(() => of(50000)) // ← Override just this!
         })
       ]
     });
@@ -94,7 +98,7 @@ describe('Revenue Tests', () => {
     TestBed.configureTestingModule({
       providers: [
         provideMyBusinessServiceMock({ 
-          processPayment: jest.fn(() => Promise.reject('Card declined'))
+          processPayment: vi.fn(() => Promise.reject('Card declined'))
         })
       ]
     });
@@ -114,6 +118,24 @@ describe('Revenue Tests', () => {
 
 ## 🚀 Quick Migration Guide
 
+### From Jest to Vitest
+
+```typescript
+// ❌ Before: Jest
+import { jest } from '@jest/globals';
+
+beforeEach(() => {
+  const mockFn = jest.fn();
+});
+
+// ✅ After: Vitest
+import { vi } from 'vitest';
+
+beforeEach(() => {
+  const mockFn = vi.fn();
+});
+```
+
 ### From Manual Window Mocking
 
 ```typescript
@@ -121,7 +143,7 @@ describe('Revenue Tests', () => {
 beforeEach(() => {
   (global as any).window = {
     innerWidth: 1024,
-    addEventListener: jest.fn(),
+    addEventListener: vi.fn(),
     // Missing tons of properties...
   };
 });
@@ -195,7 +217,7 @@ interface MyBusinessService {
 
 // ✅ This will catch ANY drift at compile-time:
 const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessService, {
-  calculateRevenue: jest.fn(() => of(1000)),
+  calculateRevenue: vi.fn(() => of(1000)),
   // ❌ If you forget a method → TypeScript error!
   // ❌ If you add wrong method → TypeScript error!  
   // ❌ If return type changes → TypeScript error!
@@ -204,6 +226,7 @@ const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessServ
 ```
 
 ```typescript
+import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { provideHttpClientMock } from '@halverscheid-fiae.de/angular-testing-factory';
 
@@ -211,8 +234,8 @@ import { provideHttpClientMock } from '@halverscheid-fiae.de/angular-testing-fac
 TestBed.configureTestingModule({
   providers: [
     provideHttpClientMock({
-      get: jest.fn(() => of({ data: 'custom response' })),
-      post: jest.fn(() => of({ success: true }))
+      get: vi.fn(() => of({ data: 'custom response' })),
+      post: vi.fn(() => of({ success: true }))
     })
   ]
 });
@@ -353,11 +376,14 @@ export class MyComponent {
 ### 3-Line Rule for New Services
 
 ```typescript
+import { vi } from 'vitest';
+import { of } from 'rxjs';
+
 // 1. Define service defaults
-const MY_SERVICE_DEFAULTS: Partial<jest.Mocked<MyService>> = {
-  getData: jest.fn(() => of([])),
-  saveData: jest.fn(() => Promise.resolve())
-};
+const MY_SERVICE_DEFAULTS = {
+  getData: vi.fn(() => of([])),
+  saveData: vi.fn(() => Promise.resolve())
+} satisfies Partial<MyService>;
 
 // 2. Create factory
 const createMockMyService = (overrides = {}) => 
@@ -413,33 +439,51 @@ describe('MyComponent', () => {
 
 **Error:** `TypeError: control.setParent is not a function`
 
-**Root Cause:** Jest needs to properly mock Angular Forms globally to avoid conflicts.
+**Root Cause:** Vitest needs to properly mock Angular Forms globally to avoid conflicts.
 
 **Complete Solution:**
 
-1. **Create jest.setup.js in your project root:**
+1. **Create vitest.setup.ts in your project root:**
 
-```javascript
-// jest.setup.js - Global Angular Forms Mock
-jest.mock('@angular/forms', () => {
-  const originalModule = jest.requireActual('@angular/forms');
-  
+```typescript
+// vitest.setup.ts - Global Angular Forms Mock
+import { vi } from 'vitest';
+import '@angular/compiler';
+import { TestBed } from '@angular/core/testing';
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+
+// Initialize Angular TestBed
+TestBed.initTestEnvironment(
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting()
+);
+
+vi.mock('@angular/forms', () => {
   class MockFormControl {
-    constructor(formState, validatorOrOpts, asyncValidator) {
+    constructor(formState?: any, validatorOrOpts?: any, asyncValidator?: any) {
       this.value = Array.isArray(formState) ? formState[0] : formState;
       this.valid = true;
       this.invalid = false;
       this.errors = null;
-      this.setValue = jest.fn();
-      this.patchValue = jest.fn();
-      this.reset = jest.fn();
-      this.setParent = jest.fn(); // CRITICAL: This method must exist!
+      this.setValue = vi.fn();
+      this.patchValue = vi.fn();
+      this.reset = vi.fn();
+      this.setParent = vi.fn(); // CRITICAL: This method must exist!
       // Additional FormControl properties as needed
     }
+    
+    value: any;
+    valid: boolean;
+    invalid: boolean;
+    errors: any;
+    setValue: any;
+    patchValue: any;
+    reset: any;
+    setParent: any;
   }
 
   class MockFormGroup {
-    constructor(controlsConfig, options) {
+    constructor(controlsConfig?: any, options?: any) {
       this.controls = {};
       this.value = {};
       
@@ -449,29 +493,35 @@ jest.mock('@angular/forms', () => {
           this.controls[key] = new MockFormControl(config);
           // Ensure parent relationship
           if (this.controls[key].setParent) {
-            this.controls[key].setParent = jest.fn();
+            this.controls[key].setParent = vi.fn();
           }
         });
       }
       
-      this.setValue = jest.fn();
-      this.patchValue = jest.fn();
-      this.get = jest.fn((path) => this.controls[path] || null);
-      this.setParent = jest.fn();
+      this.setValue = vi.fn();
+      this.patchValue = vi.fn();
+      this.get = vi.fn((path: string) => this.controls[path] || null);
+      this.setParent = vi.fn();
     }
+    
+    controls: any;
+    value: any;
+    setValue: any;
+    patchValue: any;
+    get: any;
+    setParent: any;
   }
 
   class MockFormBuilder {
-    control(formState, validatorOrOpts, asyncValidator) {
+    control(formState?: any, validatorOrOpts?: any, asyncValidator?: any) {
       return new MockFormControl(formState, validatorOrOpts, asyncValidator);
     }
-    group(controlsConfig, options) {
+    group(controlsConfig?: any, options?: any) {
       return new MockFormGroup(controlsConfig, options);
     }
   }
 
   return {
-    ...originalModule,
     FormControl: MockFormControl,
     FormGroup: MockFormGroup,
     FormBuilder: MockFormBuilder
@@ -479,24 +529,30 @@ jest.mock('@angular/forms', () => {
 });
 ```
 
-2. **Update jest.config.js:**
+2. **Update vitest.config.ts:**
 
-```javascript
-// jest.config.js
-module.exports = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  // ... rest of your configuration
-};
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'happy-dom', // or 'jsdom'
+    setupFiles: ['./vitest.setup.ts'],
+    // ... rest of your configuration
+  }
+});
 ```
 
 3. **Alternative: Use our pre-configured provider:**
 
 ```typescript
-import { provideAngularCommon } from 'angular-testing-factory';
+import { provideAngularCoreMocks } from '@halverscheid-fiae.de/angular-testing-factory';
 
 TestBed.configureTestingModule({
   providers: [
-    provideAngularCommon(), // Includes setParent-aware FormBuilder
+    provideAngularCoreMocks(), // Includes setParent-aware FormBuilder
     // ... your other providers
   ]
 });
@@ -508,15 +564,17 @@ TestBed.configureTestingModule({
 
 **Solution:**
 
-## �🔍 SignalStore Testing
+## 🔍 SignalStore Testing
 
 ```typescript
+import { vi } from 'vitest';
+
 // ❌ This does NOT work with SignalStores:
-const spy = jest.spyOn(store.myService, 'getData'); // Error!
+const spy = vi.spyOn(store.myService, 'getData'); // Error!
 
 // ✅ Correct approach for SignalStores:
 const mockService = TestBed.inject(MyService); // After TestBed setup
-const spy = jest.spyOn(mockService, 'getData');
+const spy = vi.spyOn(mockService, 'getData');
 ```
 
 ## 🔧 Troubleshooting Guide
@@ -540,10 +598,12 @@ const spy = jest.spyOn(mockService, 'getData');
 
 ### Before (Traditional Approach)
 ```typescript
+import { vi } from 'vitest';
+
 // ❌ Error-prone, lots of boilerplate, mock drift
 const mockService = {
-  getData: jest.fn(),
-  setData: jest.fn(),
+  getData: vi.fn(),
+  setData: vi.fn(),
   // Forgotten methods lead to runtime errors
 };
 
@@ -556,11 +616,14 @@ TestBed.configureTestingModule({
 
 ### After (With Angular Testing Factory)
 ```typescript
+import { vi } from 'vitest';
+import { of } from 'rxjs';
+
 // ✅ Type-safe, 3-line rule, zero mock drift
 TestBed.configureTestingModule({
   providers: [
     provideMyServiceMock({
-      getData: jest.fn(() => of(customData))
+      getData: vi.fn(() => of(customData))
     })
   ]
 });
@@ -592,10 +655,63 @@ This library provides:
 
 ## 📋 Requirements
 
-- Angular 20+
+- Angular 21+
 - TypeScript 5.0+
-- Jest 29+
+- Vitest 4+
 - RxJS 7+
+
+## 🧪 Setting Up Vitest with Angular
+
+### Installation
+
+```bash
+npm install --save-dev vitest @vitest/ui happy-dom @angular/compiler @angular/platform-browser-dynamic
+```
+
+### Configuration
+
+**vitest.config.ts:**
+```typescript
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    include: ['src/**/*.spec.ts'],
+    setupFiles: ['./vitest.setup.ts']
+  }
+});
+```
+
+**vitest.setup.ts:**
+```typescript
+import { vi } from 'vitest';
+import '@angular/compiler';
+import { TestBed } from '@angular/core/testing';
+import { 
+  BrowserDynamicTestingModule, 
+  platformBrowserDynamicTesting 
+} from '@angular/platform-browser-dynamic/testing';
+
+// Initialize Angular TestBed environment
+TestBed.initTestEnvironment(
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting()
+);
+```
+
+**package.json:**
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  }
+}
+```
 
 ## 🤝 Contributing
 

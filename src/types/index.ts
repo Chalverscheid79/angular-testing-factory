@@ -5,6 +5,8 @@
  * Central type definitions for the Testing Framework
  */
 
+import type { Mock } from 'vitest';
+
 // Injection Tokens
 export * from './injection-tokens';
 
@@ -18,7 +20,7 @@ export type MockReturnType<T, K extends keyof T> = T[K] extends (...args: any[])
  */
 export type ObservableMock<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => infer R ? 
-    jest.Mock<R, any[]> : T[K];
+    Mock<R> : T[K];
 };
 
 /**
@@ -26,5 +28,5 @@ export type ObservableMock<T> = {
  */
 export interface ServiceMockConfig<T = any> {
   token: any;
-  mockFactory: () => Partial<jest.Mocked<T>>;
+  mockFactory: () => Partial<{ [K in keyof T]: Mock<any> }>;
 }

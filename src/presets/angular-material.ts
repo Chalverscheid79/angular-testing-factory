@@ -11,6 +11,7 @@
 import { of, EMPTY } from 'rxjs';
 import { createServiceProviderFactory } from '../core/mock-factory';
 import { Provider } from '@angular/core';
+import { vi, type Mock } from 'vitest';
 
 // Type definitions for compatibility
 interface MockMatDialog {
@@ -31,53 +32,53 @@ interface MockMatSnackBar {
  * SERVICE DEFAULTS
  * ==================================== */
 
-const MAT_DIALOG_DEFAULTS: Partial<jest.Mocked<MockMatDialog>> = {
-  open: jest.fn(() => ({
-    afterClosed: jest.fn(() => of(undefined)),
-    afterOpened: jest.fn(() => of(undefined)),
-    beforeClosed: jest.fn(() => of(undefined)),
-    backdropClick: jest.fn(() => EMPTY),
-    keydownEvents: jest.fn(() => EMPTY),
-    updatePosition: jest.fn(),
-    updateSize: jest.fn(),
-    addPanelClass: jest.fn(),
-    removePanelClass: jest.fn(),
-    close: jest.fn(),
-    getState: jest.fn(() => 0),
+const MAT_DIALOG_DEFAULTS: Partial<{ [K in keyof MockMatDialog]: Mock<any> }> = {
+  open: vi.fn(() => ({
+    afterClosed: vi.fn(() => of(undefined)),
+    afterOpened: vi.fn(() => of(undefined)),
+    beforeClosed: vi.fn(() => of(undefined)),
+    backdropClick: vi.fn(() => EMPTY),
+    keydownEvents: vi.fn(() => EMPTY),
+    updatePosition: vi.fn(),
+    updateSize: vi.fn(),
+    addPanelClass: vi.fn(),
+    removePanelClass: vi.fn(),
+    close: vi.fn(),
+    getState: vi.fn(() => 0),
     id: 'mock-dialog',
     componentInstance: {} as any
   } as any)) as any,
-  closeAll: jest.fn() as any,
-  getDialogById: jest.fn(() => null) as any,
+  closeAll: vi.fn() as any,
+  getDialogById: vi.fn(() => null) as any,
   openDialogs: []
 };
 
-const MAT_SNACK_BAR_DEFAULTS: Partial<jest.Mocked<MockMatSnackBar>> = {
-  open: jest.fn(() => ({
-    afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
-    afterOpened: jest.fn(() => of()),
-    onAction: jest.fn(() => EMPTY),
-    dismiss: jest.fn(),
-    dismissWithAction: jest.fn(),
+const MAT_SNACK_BAR_DEFAULTS: Partial<{ [K in keyof MockMatSnackBar]: Mock<any> }> = {
+  open: vi.fn(() => ({
+    afterDismissed: vi.fn(() => of({ dismissedByAction: false })),
+    afterOpened: vi.fn(() => of()),
+    onAction: vi.fn(() => EMPTY),
+    dismiss: vi.fn(),
+    dismissWithAction: vi.fn(),
     instance: {} as any
   } as any)) as any,
-  openFromComponent: jest.fn(() => ({
-    afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
-    afterOpened: jest.fn(() => of()),
-    onAction: jest.fn(() => EMPTY),
-    dismiss: jest.fn(),
-    dismissWithAction: jest.fn(),
+  openFromComponent: vi.fn(() => ({
+    afterDismissed: vi.fn(() => of({ dismissedByAction: false })),
+    afterOpened: vi.fn(() => of()),
+    onAction: vi.fn(() => EMPTY),
+    dismiss: vi.fn(),
+    dismissWithAction: vi.fn(),
     instance: {} as any
   } as any)) as any,
-  openFromTemplate: jest.fn(() => ({
-    afterDismissed: jest.fn(() => of({ dismissedByAction: false })),
-    afterOpened: jest.fn(() => of()),
-    onAction: jest.fn(() => EMPTY),
-    dismiss: jest.fn(),
-    dismissWithAction: jest.fn(),
+  openFromTemplate: vi.fn(() => ({
+    afterDismissed: vi.fn(() => of({ dismissedByAction: false })),
+    afterOpened: vi.fn(() => of()),
+    onAction: vi.fn(() => EMPTY),
+    dismiss: vi.fn(),
+    dismissWithAction: vi.fn(),
     instance: {} as any
   } as any)) as any,
-  dismiss: jest.fn() as any
+  dismiss: vi.fn() as any
 };
 
 // Mock-Token für Tests (falls Angular Material nicht verfügbar)
@@ -89,11 +90,11 @@ const MAT_SNACK_BAR_TOKEN = 'MAT_SNACK_BAR_MOCK';
  * ==================================== */
 
 /** Angular Provider for MatDialog Mock */
-export const provideMatDialogMock = (overrides: Partial<jest.Mocked<MockMatDialog>> = {}): Provider =>
+export const provideMatDialogMock = (overrides: Partial<{ [K in keyof MockMatDialog]: Mock<any> }> = {}): Provider =>
   createServiceProviderFactory(MAT_DIALOG_TOKEN, MAT_DIALOG_DEFAULTS)(overrides);
 
 /** Angular Provider for MatSnackBar Mock */
-export const provideMatSnackBarMock = (overrides: Partial<jest.Mocked<MockMatSnackBar>> = {}): Provider =>
+export const provideMatSnackBarMock = (overrides: Partial<{ [K in keyof MockMatSnackBar]: Mock<any> }> = {}): Provider =>
   createServiceProviderFactory(MAT_SNACK_BAR_TOKEN, MAT_SNACK_BAR_DEFAULTS)(overrides);
 
 /**

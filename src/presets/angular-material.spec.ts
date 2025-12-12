@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import {
   provideMatDialogMock,
   provideMatSnackBarMock,
@@ -16,7 +17,7 @@ describe('Angular Material Presets', () => {
     });
 
     it('should apply overrides correctly', () => {
-      const mockOpen = jest.fn(() => ({ close: jest.fn() }));
+      const mockOpen = vi.fn(() => ({ close: vi.fn() }));
       const provider = provideMatDialogMock({
         open: mockOpen as any
       }) as any;
@@ -84,12 +85,12 @@ describe('Angular Material Presets', () => {
 
     it('should allow complex dialog scenarios', () => {
       const customDialogRef = {
-        afterClosed: jest.fn(() => ({ subscribe: jest.fn() })),
-        close: jest.fn()
+        afterClosed: vi.fn(() => ({ subscribe: vi.fn() })),
+        close: vi.fn()
       };
       
       const provider = provideMatDialogMock({
-        open: jest.fn(() => customDialogRef) as any,
+        open: vi.fn(() => customDialogRef) as any,
         openDialogs: [customDialogRef] as any
       }) as any;
       
@@ -112,7 +113,7 @@ describe('Angular Material Presets', () => {
     });
 
     it('should apply overrides correctly', () => {
-      const mockOpen = jest.fn(() => ({ dismiss: jest.fn() }));
+      const mockOpen = vi.fn(() => ({ dismiss: vi.fn() }));
       const provider = provideMatSnackBarMock({
         open: mockOpen as any
       }) as any;
@@ -179,13 +180,13 @@ describe('Angular Material Presets', () => {
 
     it('should allow complex snackbar scenarios', () => {
       const customSnackRef = {
-        afterDismissed: jest.fn(() => ({ subscribe: jest.fn() })),
-        dismiss: jest.fn(),
+        afterDismissed: vi.fn(() => ({ subscribe: vi.fn() })),
+        dismiss: vi.fn(),
         instance: { message: 'Custom message' }
       };
       
       const provider = provideMatSnackBarMock({
-        open: jest.fn(() => customSnackRef) as any
+        open: vi.fn(() => customSnackRef) as any
       }) as any;
       
       const snackBarMock = provider.useValue;
@@ -254,11 +255,11 @@ describe('Angular Material Presets', () => {
       let dialogCount = 0;
       
       const provider = provideMatDialogMock({
-        open: jest.fn(() => {
+        open: vi.fn(() => {
           dialogCount++;
           return { 
             id: `dialog-${dialogCount}`,
-            close: jest.fn(() => { dialogCount--; })
+            close: vi.fn(() => { dialogCount--; })
           };
         }) as any
       }) as any;
@@ -280,12 +281,12 @@ describe('Angular Material Presets', () => {
       let lastAction: string | null = null;
       
       const provider = provideMatSnackBarMock({
-        open: jest.fn(() => ({
-          onAction: jest.fn(() => ({ subscribe: (callback: any) => callback('ACTION_CLICKED') })),
-          afterDismissed: jest.fn(() => ({ subscribe: (callback: any) => {
+        open: vi.fn(() => ({
+          onAction: vi.fn(() => ({ subscribe: (callback: any) => callback('ACTION_CLICKED') })),
+          afterDismissed: vi.fn(() => ({ subscribe: (callback: any) => {
             setTimeout(() => callback({ dismissedByAction: lastAction !== null }), 10);
           }})),
-          dismissWithAction: jest.fn(() => { lastAction = 'DISMISS_ACTION'; })
+          dismissWithAction: vi.fn(() => { lastAction = 'DISMISS_ACTION'; })
         })) as any
       }) as any;
       

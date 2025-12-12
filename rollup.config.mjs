@@ -1,6 +1,20 @@
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 
+const externals = [
+  '@angular/core',
+  '@angular/common',
+  '@angular/common/http',
+  '@angular/router',
+  '@angular/forms',
+  '@angular/platform-browser',
+  '@angular/material/dialog',
+  '@angular/material/snackbar',
+  'rxjs',
+  'rxjs/operators',
+  'vitest'
+];
+
 const config = [
   // ES Modules Build
   {
@@ -17,7 +31,7 @@ const config = [
         sourceMap: true
       })
     ],
-    external: ['@angular/core', '@angular/common', '@angular/material/dialog', '@angular/material/snackbar', 'rxjs', 'rxjs/operators']
+    external: externals
   },
   
   // CommonJS Build
@@ -35,7 +49,7 @@ const config = [
         sourceMap: true
       })
     ],
-    external: ['@angular/core', '@angular/common', '@angular/material/dialog', '@angular/material/snackbar', 'rxjs', 'rxjs/operators']
+    external: externals
   },
   
   // Types Bundle

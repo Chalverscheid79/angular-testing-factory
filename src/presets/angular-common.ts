@@ -8,6 +8,7 @@
 
 /* eslint-disable no-undef */
 
+import { vi } from 'vitest';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
@@ -24,11 +25,11 @@ import { DOCUMENT_TOKEN, WINDOW_TOKEN } from '../types/injection-tokens';
 
 // Mock ParamMap for ActivatedRoute
 const createMockParamMap = (params: Record<string, string | string[]> = {}) => ({
-  get: jest.fn((key: string) => params[key]?.toString() || null),
-  getAll: jest.fn((key: string) => Array.isArray(params[key]) ? params[key] as string[] : [params[key]?.toString()].filter(Boolean)),
-  has: jest.fn((key: string) => Object.prototype.hasOwnProperty.call(params, key)),
+  get: vi.fn((key: string) => params[key]?.toString() || null),
+  getAll: vi.fn((key: string) => Array.isArray(params[key]) ? params[key] as string[] : [params[key]?.toString()].filter(Boolean)),
+  has: vi.fn((key: string) => Object.prototype.hasOwnProperty.call(params, key)),
   keys: Object.keys(params)
-} satisfies jest.Mocked<Partial<ParamMap>>);
+} satisfies Mock<Partial<ParamMap>>);
 
 const ACTIVATED_ROUTE_DEFAULTS = {
   snapshot: {
@@ -65,13 +66,13 @@ const ACTIVATED_ROUTE_DEFAULTS = {
   firstChild: null,
   children: [],
   pathFromRoot: []
-} satisfies jest.Mocked<Partial<ActivatedRoute>>;
+} satisfies Mock<Partial<ActivatedRoute>>;
 
-// FormBuilder Mock - elegant mit jest.Mocked<Partial<FormBuilder>>
+// FormBuilder Mock - elegant mit Mock<Partial<FormBuilder>>
 // Das ist die RICHTIGE Lösung, die Christian vorgeschlagen hat!
 const FORM_BUILDER_DEFAULTS = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  control: jest.fn((formState: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
+  control: vi.fn((formState: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
     value: Array.isArray(formState) ? formState[0] : formState,
     valid: true,
     invalid: false,
@@ -84,37 +85,37 @@ const FORM_BUILDER_DEFAULTS = {
     touched: false,
     untouched: true,
     parent: null,
-    setValue: jest.fn(),
-    patchValue: jest.fn(),
-    reset: jest.fn(),
-    get: jest.fn(),
-    markAsTouched: jest.fn(),
-    markAsUntouched: jest.fn(),
-    markAsDirty: jest.fn(),
-    markAsPristine: jest.fn(),
-    markAsPending: jest.fn(),
-    setErrors: jest.fn(),
-    getError: jest.fn(),
-    hasError: jest.fn(),
-    updateValueAndValidity: jest.fn(),
-    setParent: jest.fn(), // KRITISCH: setParent() muss existieren!
-    statusChanges: { subscribe: jest.fn() },
-    valueChanges: { subscribe: jest.fn() },
-    disable: jest.fn(),
-    enable: jest.fn(),
-    addValidators: jest.fn(),
-    removeValidators: jest.fn(),
-    clearValidators: jest.fn(),
-    addAsyncValidators: jest.fn(),
-    removeAsyncValidators: jest.fn(),
-    clearAsyncValidators: jest.fn(),
+    setValue: vi.fn(),
+    patchValue: vi.fn(),
+    reset: vi.fn(),
+    get: vi.fn(),
+    markAsTouched: vi.fn(),
+    markAsUntouched: vi.fn(),
+    markAsDirty: vi.fn(),
+    markAsPristine: vi.fn(),
+    markAsPending: vi.fn(),
+    setErrors: vi.fn(),
+    getError: vi.fn(),
+    hasError: vi.fn(),
+    updateValueAndValidity: vi.fn(),
+    setParent: vi.fn(), // KRITISCH: setParent() muss existieren!
+    statusChanges: { subscribe: vi.fn() },
+    valueChanges: { subscribe: vi.fn() },
+    disable: vi.fn(),
+    enable: vi.fn(),
+    addValidators: vi.fn(),
+    removeValidators: vi.fn(),
+    clearValidators: vi.fn(),
+    addAsyncValidators: vi.fn(),
+    removeAsyncValidators: vi.fn(),
+    clearAsyncValidators: vi.fn(),
     status: 'VALID',
-    getRawValue: jest.fn(),
+    getRawValue: vi.fn(),
     defaultValue: undefined
   })),
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  group: jest.fn((controlsConfig: any, _options?: any) => {
+  group: vi.fn((controlsConfig: any, _options?: any) => {
     const controls: Record<string, any> = {};
     const value: Record<string, any> = {};
     
@@ -136,7 +137,7 @@ const FORM_BUILDER_DEFAULTS = {
         
         // Stelle sicher, dass setParent verfügbar ist
         if (controls[key] && typeof controls[key].setParent !== 'function') {
-          controls[key].setParent = jest.fn();
+          controls[key].setParent = vi.fn();
         }
       });
     }
@@ -155,41 +156,41 @@ const FORM_BUILDER_DEFAULTS = {
       touched: false,
       untouched: true,
       parent: null,
-      setValue: jest.fn(),
-      patchValue: jest.fn(),
-      reset: jest.fn(),
-      get: jest.fn((path: string) => controls[path] || null),
-      addControl: jest.fn(),
-      removeControl: jest.fn(),
-      setControl: jest.fn(),
-      contains: jest.fn(),
-      markAsTouched: jest.fn(),
-      markAsUntouched: jest.fn(),
-      markAsDirty: jest.fn(),
-      markAsPristine: jest.fn(),
-      updateValueAndValidity: jest.fn(),
-      setParent: jest.fn(),
-      statusChanges: { subscribe: jest.fn() },
-      valueChanges: { subscribe: jest.fn() },
-      disable: jest.fn(),
-      enable: jest.fn(),
-      getRawValue: jest.fn(),
+      setValue: vi.fn(),
+      patchValue: vi.fn(),
+      reset: vi.fn(),
+      get: vi.fn((path: string) => controls[path] || null),
+      addControl: vi.fn(),
+      removeControl: vi.fn(),
+      setControl: vi.fn(),
+      contains: vi.fn(),
+      markAsTouched: vi.fn(),
+      markAsUntouched: vi.fn(),
+      markAsDirty: vi.fn(),
+      markAsPristine: vi.fn(),
+      updateValueAndValidity: vi.fn(),
+      setParent: vi.fn(),
+      statusChanges: { subscribe: vi.fn() },
+      valueChanges: { subscribe: vi.fn() },
+      disable: vi.fn(),
+      enable: vi.fn(),
+      getRawValue: vi.fn(),
       status: 'VALID'
     };
   }),
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  array: jest.fn((controls: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
+  array: vi.fn((controls: any, _validatorOrOpts?: any, _asyncValidator?: any) => ({
     controls: Array.isArray(controls) ? controls : [],
     length: Array.isArray(controls) ? controls.length : 0,
-    at: jest.fn(),
-    push: jest.fn(),
-    insert: jest.fn(),
-    removeAt: jest.fn(),
-    setControl: jest.fn(),
-    setValue: jest.fn(),
-    patchValue: jest.fn(),
-    reset: jest.fn(),
+    at: vi.fn(),
+    push: vi.fn(),
+    insert: vi.fn(),
+    removeAt: vi.fn(),
+    setControl: vi.fn(),
+    setValue: vi.fn(),
+    patchValue: vi.fn(),
+    reset: vi.fn(),
     value: [],
     valid: true,
     invalid: false,
@@ -201,31 +202,31 @@ const FORM_BUILDER_DEFAULTS = {
     dirty: false,
     touched: false,
     untouched: true,
-    markAsTouched: jest.fn(),
-    markAsUntouched: jest.fn(),
-    markAsDirty: jest.fn(),
-    markAsPristine: jest.fn(),
-    updateValueAndValidity: jest.fn(),
-    get: jest.fn(),
-    clear: jest.fn(),
-    statusChanges: { subscribe: jest.fn() },
-    valueChanges: { subscribe: jest.fn() },
-    disable: jest.fn(),
-    enable: jest.fn(),
-    getRawValue: jest.fn(),
+    markAsTouched: vi.fn(),
+    markAsUntouched: vi.fn(),
+    markAsDirty: vi.fn(),
+    markAsPristine: vi.fn(),
+    updateValueAndValidity: vi.fn(),
+    get: vi.fn(),
+    clear: vi.fn(),
+    statusChanges: { subscribe: vi.fn() },
+    valueChanges: { subscribe: vi.fn() },
+    disable: vi.fn(),
+    enable: vi.fn(),
+    getRawValue: vi.fn(),
     status: 'VALID'
   })),
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  record: jest.fn((controls: any, _validatorOrOpts?: any) => ({
+  record: vi.fn((controls: any, _validatorOrOpts?: any) => ({
     controls: controls || {},
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    setControl: jest.fn(),
-    contains: jest.fn(),
-    setValue: jest.fn(),
-    patchValue: jest.fn(),
-    reset: jest.fn(),
+    addControl: vi.fn(),
+    removeControl: vi.fn(),
+    setControl: vi.fn(),
+    contains: vi.fn(),
+    setValue: vi.fn(),
+    patchValue: vi.fn(),
+    reset: vi.fn(),
     value: {},
     valid: true,
     invalid: false,
@@ -237,95 +238,95 @@ const FORM_BUILDER_DEFAULTS = {
     dirty: false,
     touched: false,
     untouched: true,
-    markAsTouched: jest.fn(),
-    markAsUntouched: jest.fn(),
-    markAsDirty: jest.fn(),
-    markAsPristine: jest.fn(),
-    updateValueAndValidity: jest.fn(),
-    get: jest.fn(),
-    statusChanges: { subscribe: jest.fn() },
-    valueChanges: { subscribe: jest.fn() },
-    disable: jest.fn(),
-    enable: jest.fn(),
-    getRawValue: jest.fn(),
+    markAsTouched: vi.fn(),
+    markAsUntouched: vi.fn(),
+    markAsDirty: vi.fn(),
+    markAsPristine: vi.fn(),
+    updateValueAndValidity: vi.fn(),
+    get: vi.fn(),
+    statusChanges: { subscribe: vi.fn() },
+    valueChanges: { subscribe: vi.fn() },
+    disable: vi.fn(),
+    enable: vi.fn(),
+    getRawValue: vi.fn(),
     status: 'VALID'
   }))
 } satisfies Record<keyof Pick<FormBuilder, 'control' | 'group' | 'array' | 'record'>, jest.Mock>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DOM_SANITIZER_DEFAULTS = {
-  sanitize: jest.fn((context: any, value: any) => value) as any,
-  bypassSecurityTrustHtml: jest.fn((value: string) => ({ __html: value } as SafeHtml)),
-  bypassSecurityTrustStyle: jest.fn((value: string) => ({ __style: value } as SafeStyle)),
-  bypassSecurityTrustScript: jest.fn((value: string) => ({ __script: value } as SafeScript)),
-  bypassSecurityTrustUrl: jest.fn((value: string) => ({ __url: value } as SafeUrl)),
-  bypassSecurityTrustResourceUrl: jest.fn((value: string) => ({ __resourceUrl: value } as SafeResourceUrl))
-} satisfies jest.Mocked<Partial<DomSanitizer>>;
+  sanitize: vi.fn((context: any, value: any) => value) as any,
+  bypassSecurityTrustHtml: vi.fn((value: string) => ({ __html: value } as SafeHtml)),
+  bypassSecurityTrustStyle: vi.fn((value: string) => ({ __style: value } as SafeStyle)),
+  bypassSecurityTrustScript: vi.fn((value: string) => ({ __script: value } as SafeScript)),
+  bypassSecurityTrustUrl: vi.fn((value: string) => ({ __url: value } as SafeUrl)),
+  bypassSecurityTrustResourceUrl: vi.fn((value: string) => ({ __resourceUrl: value } as SafeResourceUrl))
+} satisfies Mock<Partial<DomSanitizer>>;
 
 // Browser API Mocks
 const createMockStorage = () => ({
   length: 0,
-  clear: jest.fn(),
-  getItem: jest.fn(() => null),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  key: jest.fn(() => null)
-} satisfies jest.Mocked<Partial<Storage>>);
+  clear: vi.fn(),
+  getItem: vi.fn(() => null),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  key: vi.fn(() => null)
+} satisfies Mock<Partial<Storage>>);
 
 const ELEMENT_REF_DEFAULTS = <T = HTMLElement>(): ElementRef<T> => ({
   nativeElement: {
-    focus: jest.fn(),
-    blur: jest.fn(),
-    click: jest.fn(),
-    scrollIntoView: jest.fn(),
-    getBoundingClientRect: jest.fn(() => ({
+    focus: vi.fn(),
+    blur: vi.fn(),
+    click: vi.fn(),
+    scrollIntoView: vi.fn(),
+    getBoundingClientRect: vi.fn(() => ({
       x: 0, y: 0, width: 0, height: 0,
       top: 0, right: 0, bottom: 0, left: 0,
       toJSON: () => ({})
     }))
   } as any
-} satisfies jest.Mocked<Partial<ElementRef<T>>>);
+} satisfies Mock<Partial<ElementRef<T>>>);
 
 const DOCUMENT_DEFAULTS = {
-  createElement: jest.fn(() => ({
-    setAttribute: jest.fn(),
-    getAttribute: jest.fn(),
-    appendChild: jest.fn(),
-    removeChild: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    click: jest.fn(),
-    focus: jest.fn()
+  createElement: vi.fn(() => ({
+    setAttribute: vi.fn(),
+    getAttribute: vi.fn(),
+    appendChild: vi.fn(),
+    removeChild: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    click: vi.fn(),
+    focus: vi.fn()
   } as any)),
-  getElementById: jest.fn(() => null),
-  querySelector: jest.fn(() => null),
-  querySelectorAll: jest.fn(() => [] as any),
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
+  getElementById: vi.fn(() => null),
+  querySelector: vi.fn(() => null),
+  querySelectorAll: vi.fn(() => [] as any),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
   title: '',
   body: {
-    appendChild: jest.fn(),
-    removeChild: jest.fn(),
+    appendChild: vi.fn(),
+    removeChild: vi.fn(),
     classList: {
-      add: jest.fn(),
-      remove: jest.fn(),
-      contains: jest.fn(() => false),
-      toggle: jest.fn()
+      add: vi.fn(),
+      remove: vi.fn(),
+      contains: vi.fn(() => false),
+      toggle: vi.fn()
     }
   } as any
-} satisfies jest.Mocked<Partial<Document>>;
+} satisfies Mock<Partial<Document>>;
 
 const WINDOW_DEFAULTS = {
   navigator: {
-    share: jest.fn(),
+    share: vi.fn(),
     clipboard: { 
-      writeText: jest.fn(() => Promise.resolve())
+      writeText: vi.fn(() => Promise.resolve())
     },
     userAgent: 'test-agent'
   } as any,
-  open: jest.fn(),
-  close: jest.fn(),
-  scrollTo: jest.fn(),
+  open: vi.fn(),
+  close: vi.fn(),
+  scrollTo: vi.fn(),
   scrollY: 0,
   scrollX: 0,
   innerWidth: 1024,
@@ -336,52 +337,52 @@ const WINDOW_DEFAULTS = {
     pathname: '/',
     search: '',
     hash: '',
-    reload: jest.fn(),
-    assign: jest.fn(),
-    replace: jest.fn()
+    reload: vi.fn(),
+    assign: vi.fn(),
+    replace: vi.fn()
   } as any,
   localStorage: createMockStorage(),
   sessionStorage: createMockStorage(),
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  alert: jest.fn(),
-  confirm: jest.fn(() => true),
-  prompt: jest.fn(() => null)
-} satisfies jest.Mocked<Partial<Window & typeof globalThis>>;
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  alert: vi.fn(),
+  confirm: vi.fn(() => true),
+  prompt: vi.fn(() => null)
+} satisfies Mock<Partial<Window & typeof globalThis>>;
 
 const HTTP_CLIENT_DEFAULTS = {
-  get: jest.fn(() => of({})) as any,
-  post: jest.fn(() => of({})) as any,
-  put: jest.fn(() => of({})) as any,
-  delete: jest.fn(() => of({})) as any,
-  patch: jest.fn(() => of({})) as any,
-  head: jest.fn(() => of({})) as any,
-  options: jest.fn(() => of({})) as any,
-  request: jest.fn(() => of({})) as any
-} satisfies jest.Mocked<Partial<HttpClient>>;
+  get: vi.fn(() => of({})) as any,
+  post: vi.fn(() => of({})) as any,
+  put: vi.fn(() => of({})) as any,
+  delete: vi.fn(() => of({})) as any,
+  patch: vi.fn(() => of({})) as any,
+  head: vi.fn(() => of({})) as any,
+  options: vi.fn(() => of({})) as any,
+  request: vi.fn(() => of({})) as any
+} satisfies Mock<Partial<HttpClient>>;
 
 const ROUTER_DEFAULTS = {
-  navigate: jest.fn(() => Promise.resolve(true)) as any,
-  navigateByUrl: jest.fn(() => Promise.resolve(true)) as any,
-  createUrlTree: jest.fn(() => ({} as any)) as any,
-  serializeUrl: jest.fn(() => '') as any,
-  parseUrl: jest.fn(() => ({} as any)) as any,
-  isActive: jest.fn(() => false) as any,
+  navigate: vi.fn(() => Promise.resolve(true)) as any,
+  navigateByUrl: vi.fn(() => Promise.resolve(true)) as any,
+  createUrlTree: vi.fn(() => ({} as any)) as any,
+  serializeUrl: vi.fn(() => '') as any,
+  parseUrl: vi.fn(() => ({} as any)) as any,
+  isActive: vi.fn(() => false) as any,
   events: EMPTY as any
-} satisfies jest.Mocked<Partial<Router>>;
+} satisfies Mock<Partial<Router>>;
 
 const LOCATION_DEFAULTS = {
-  back: jest.fn() as any,
-  forward: jest.fn() as any,
-  go: jest.fn() as any,
-  replaceState: jest.fn() as any,
-  getState: jest.fn(() => null) as any,
-  isCurrentPathEqualTo: jest.fn(() => false) as any,
-  normalize: jest.fn((url: string) => url) as any,
-  prepareExternalUrl: jest.fn((url: string) => url) as any,
-  path: jest.fn(() => '') as any,
-  subscribe: jest.fn(() => ({ unsubscribe: jest.fn(), closed: false })) as any
-} satisfies jest.Mocked<Partial<Location>>;
+  back: vi.fn() as any,
+  forward: vi.fn() as any,
+  go: vi.fn() as any,
+  replaceState: vi.fn() as any,
+  getState: vi.fn(() => null) as any,
+  isCurrentPathEqualTo: vi.fn(() => false) as any,
+  normalize: vi.fn((url: string) => url) as any,
+  prepareExternalUrl: vi.fn((url: string) => url) as any,
+  path: vi.fn(() => '') as any,
+  subscribe: vi.fn(() => ({ unsubscribe: vi.fn(), closed: false })) as any
+} satisfies Mock<Partial<Location>>;
 
 /* ====================================
  * PUBLIC API: PROVIDER FACTORIES

@@ -17,6 +17,7 @@
  * @version 1.0.0
  */
 
+import { vi } from 'vitest';
 import { Provider } from '@angular/core';
 
 /* ====================================
@@ -33,13 +34,13 @@ import { Provider } from '@angular/core';
  * @returns Fully typed mock object with strict API control
  */
 const createMockService = <T>(
-  defaultMocks: Partial<jest.Mocked<T>>,
-  overrides: Partial<jest.Mocked<T>> = {}
-): Partial<jest.Mocked<T>> => {
+  defaultMocks: Partial<Mock<T>>,
+  overrides: Partial<Mock<T>> = {}
+): Partial<Mock<T>> => {
   return {
     ...defaultMocks,
     ...overrides
-  } satisfies Partial<jest.Mocked<T>>;
+  } satisfies Partial<Mock<T>>;
 };
 
 /**
@@ -53,7 +54,7 @@ const createMockService = <T>(
  */
 const createMockProvider = <T>(
   token: unknown, 
-  mockService: Partial<jest.Mocked<T>>
+  mockService: Partial<Mock<T>>
 ): Provider => {
   return { provide: token, useValue: mockService };
 };
@@ -70,8 +71,8 @@ const createMockProvider = <T>(
  * ```typescript
  * // Zero Config for consumers - Compile-Time Mock Drift Prevention!
  * const mockProvider = createCustomServiceProviderMock(MyBusinessService, {
- *   calculateRevenue: jest.fn(() => of(1000)),
- *   processPayment: jest.fn(() => Promise.resolve(true)),
+ *   calculateRevenue: vi.fn(() => of(1000)),
+ *   processPayment: vi.fn(() => Promise.resolve(true)),
  *   currentBalance: signal(500)
  *   // ↑ TypeScript validates automatically against MyBusinessService interface!
  * });
@@ -83,10 +84,10 @@ const createMockProvider = <T>(
  */
 export const createCustomServiceProviderMock = <T>(
   serviceToken: unknown,
-  mockImplementation: Partial<jest.Mocked<T>>
+  mockImplementation: Partial<Mock<T>>
 ): Provider => {
   // Internal satisfies validation for Mock Drift Prevention
-  const validatedMock = mockImplementation satisfies Partial<jest.Mocked<T>>;
+  const validatedMock = mockImplementation satisfies Partial<Mock<T>>;
   return createMockProvider(serviceToken, validatedMock);
 };
 
@@ -102,8 +103,8 @@ export const createCustomServiceProviderMock = <T>(
  * ```typescript
  * // For reusable service mocks
  * export const provideMyBusinessServiceMock = createServiceProviderFactory(MyBusinessService, {
- *   calculateRevenue: jest.fn(() => of(0)),
- *   processPayment: jest.fn(() => Promise.resolve(false)),
+ *   calculateRevenue: vi.fn(() => of(0)),
+ *   processPayment: vi.fn(() => Promise.resolve(false)),
  *   currentBalance: signal(0)
  * });
  * 
@@ -111,7 +112,7 @@ export const createCustomServiceProviderMock = <T>(
  * TestBed.configureTestingModule({
  *   providers: [
  *     provideMyBusinessServiceMock({ 
- *       calculateRevenue: jest.fn(() => of(1000)) // Override defaults
+ *       calculateRevenue: vi.fn(() => of(1000)) // Override defaults
  *     })
  *   ]
  * });
@@ -119,14 +120,14 @@ export const createCustomServiceProviderMock = <T>(
  */
 export const createServiceProviderFactory = <T>(
   serviceToken: unknown,
-  defaultMocks: Partial<jest.Mocked<T>>
+  defaultMocks: Partial<Mock<T>>
 ) => {
   // Compile-time validation of default mocks
-  const validatedDefaults = defaultMocks satisfies Partial<jest.Mocked<T>>;
+  const validatedDefaults = defaultMocks satisfies Partial<Mock<T>>;
   
-  return (overrides: Partial<jest.Mocked<T>> = {}): Provider => {
+  return (overrides: Partial<Mock<T>> = {}): Provider => {
     // Compile-time validation of overrides
-    const validatedOverrides = overrides satisfies Partial<jest.Mocked<T>>;
+    const validatedOverrides = overrides satisfies Partial<Mock<T>>;
     const mockService = createMockService(validatedDefaults, validatedOverrides);
     return createMockProvider(serviceToken, mockService);
   };

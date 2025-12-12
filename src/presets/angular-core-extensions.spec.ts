@@ -1,15 +1,5 @@
 /**
- * @fileovervimport {
-  provideActivatedRouteMock,
-  provideFormBuilderMock,
-  provideDomSanitizerMock,
-  provideElementRefMock,
-  provideDocumentMock,
-  provideWindowMock,
-  setupGlobalWindowMock,
-  provideCompleteWindowMock,
-  provideAngularCoreMocks
-} from './angular-common';ehensive Tests for Angular Core Extensions
+ * @fileoverview Comprehensive Tests for Angular Core Extensions
  * 
  * @description
  * Complete test suite for all new providers to achieve 70%+ coverage.
@@ -18,12 +8,13 @@
 
 /* eslint-disable no-undef */
 
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElementRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, firstValueFrom } from 'rxjs';
 
 import {
   provideActivatedRouteMock,
@@ -40,6 +31,10 @@ import { DOCUMENT_TOKEN, WINDOW_TOKEN } from '../types/injection-tokens';
 import { CUSTOM_SERVICE_TOKEN } from '../test-tokens';
 
 describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
 
   describe('provideActivatedRouteMock', () => {
     beforeEach(() => {
@@ -105,61 +100,35 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(queryParamMap.keys).toBeDefined();
     });
 
-    it('should support Observable subscriptions', (done) => {
+    it('should support Observable subscriptions', async () => {
       const route = TestBed.inject(ActivatedRoute);
       
-      let subscriptionCount = 0;
-      const checkDone = () => {
-        subscriptionCount++;
-        if (subscriptionCount === 5) done();
-      };
+      const params = await firstValueFrom(route.params);
+      expect(params).toEqual({});
       
-      route.params.subscribe(params => {
-        expect(params).toEqual({});
-        checkDone();
-      });
+      const queryParams = await firstValueFrom(route.queryParams);
+      expect(queryParams).toEqual({});
       
-      route.queryParams.subscribe(queryParams => {
-        expect(queryParams).toEqual({});
-        checkDone();
-      });
+      const data = await firstValueFrom(route.data);
+      expect(data).toEqual({});
       
-      route.data.subscribe(data => {
-        expect(data).toEqual({});
-        checkDone();
-      });
+      const url = await firstValueFrom(route.url);
+      expect(url).toEqual([]);
       
-      route.url.subscribe(url => {
-        expect(url).toEqual([]);
-        checkDone();
-      });
-      
-      route.fragment.subscribe(fragment => {
-        expect(fragment).toBeNull();
-        checkDone();
-      });
+      const fragment = await firstValueFrom(route.fragment);
+      expect(fragment).toBeNull();
     });
 
-    it('should handle paramMap and queryParamMap Observables', (done) => {
+    it('should handle paramMap and queryParamMap Observables', async () => {
       const route = TestBed.inject(ActivatedRoute);
       
-      let subscriptionCount = 0;
-      const checkDone = () => {
-        subscriptionCount++;
-        if (subscriptionCount === 2) done();
-      };
+      const paramMap = await firstValueFrom(route.paramMap);
+      expect(paramMap).toBeDefined();
+      expect(paramMap.keys).toEqual([]);
       
-      route.paramMap.subscribe(paramMap => {
-        expect(paramMap).toBeDefined();
-        expect(paramMap.keys).toEqual([]);
-        checkDone();
-      });
-      
-      route.queryParamMap.subscribe(queryParamMap => {
-        expect(queryParamMap).toBeDefined();
-        expect(queryParamMap.keys).toEqual([]);
-        checkDone();
-      });
+      const queryParamMap = await firstValueFrom(route.queryParamMap);
+      expect(queryParamMap).toBeDefined();
+      expect(queryParamMap.keys).toEqual([]);
     });
 
     it('should support custom overrides for all properties', () => {
@@ -193,13 +162,11 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(route.component).toBeNull();
     });
 
-    it('should handle title Observable', (done) => {
+    it('should handle title Observable', async () => {
       const route = TestBed.inject(ActivatedRoute);
       
-      route.title.subscribe(title => {
-        expect(title).toBeUndefined();
-        done();
-      });
+      const title = await firstValueFrom(route.title);
+      expect(title).toBeUndefined();
     });
   });
 
@@ -308,8 +275,8 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       TestBed.configureTestingModule({
         providers: [
           provideFormBuilderMock({
-            control: jest.fn(() => new FormControl('overridden value')) as any,
-            group: jest.fn(() => new FormGroup({})) as any
+            control: vi.fn(() => new FormControl('overridden value')) as any,
+            group: vi.fn(() => new FormGroup({})) as any
           })
         ]
       });
@@ -412,8 +379,8 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       TestBed.configureTestingModule({
         providers: [
           provideDomSanitizerMock({
-            sanitize: jest.fn(() => 'custom sanitized') as any,
-            bypassSecurityTrustHtml: jest.fn((value) => ({ __html: `CUSTOM: ${value}` }) as any)
+            sanitize: vi.fn(() => 'custom sanitized') as any,
+            bypassSecurityTrustHtml: vi.fn((value) => ({ __html: `CUSTOM: ${value}` }) as any)
           })
         ]
       });
@@ -477,10 +444,10 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
             nativeElement: {
               id: 'custom-element',
               className: 'test-class',
-              focus: jest.fn(),
-              getAttribute: jest.fn((attr) => attr === 'data-test' ? 'test-value' : null),
-              setAttribute: jest.fn(),
-              addEventListener: jest.fn(),
+              focus: vi.fn(),
+              getAttribute: vi.fn((attr) => attr === 'data-test' ? 'test-value' : null),
+              setAttribute: vi.fn(),
+              addEventListener: vi.fn(),
               textContent: 'Custom content'
             } as any
           })
@@ -609,8 +576,8 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
         providers: [
           provideDocumentMock({
             title: 'Custom Title',
-            getElementById: jest.fn((id) => id === 'existing' ? { id: 'existing' } as any : null),
-            querySelector: jest.fn((selector) => selector === '.found' ? { className: 'found' } as any : null)
+            getElementById: vi.fn((id) => id === 'existing' ? { id: 'existing' } as any : null),
+            querySelector: vi.fn((selector) => selector === '.found' ? { className: 'found' } as any : null)
           })
         ]
       });
@@ -667,7 +634,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(window.scrollY).toBe(0);
     });
 
-    it('should handle navigator object', () => {
+    it('should handle navigator object', async () => {
       TestBed.configureTestingModule({
         providers: [provideWindowMock()]
       });
@@ -681,7 +648,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
       expect(navigator.userAgent).toBe('test-agent');
       
       // Test clipboard writeText method
-      expect(navigator.clipboard.writeText('test')).resolves.toBeUndefined();
+      await expect(navigator.clipboard.writeText('test')).resolves.toBeUndefined();
     });
 
     it('should handle location object', () => {
@@ -795,7 +762,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
             } as any,
             navigator: {
               userAgent: 'Custom User Agent',
-              share: jest.fn().mockResolvedValue(undefined)
+              share: vi.fn().mockResolvedValue(undefined)
             } as any
           })
         ]
@@ -893,7 +860,7 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
           // Add additional custom providers
           {
             provide: CUSTOM_SERVICE_TOKEN,
-            useValue: { customMethod: jest.fn() }
+            useValue: { customMethod: vi.fn() }
           }
         ]
       });
@@ -972,12 +939,12 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
         innerHeight: 300,
         location: { href: 'http://example.com' } as Location,
         localStorage: {
-          getItem: jest.fn().mockReturnValue('test-value'),
-          setItem: jest.fn(),
-          removeItem: jest.fn(),
-          clear: jest.fn(),
+          getItem: vi.fn().mockReturnValue('test-value'),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+          clear: vi.fn(),
           length: 0,
-          key: jest.fn()
+          key: vi.fn()
         } as Storage
       });
 
@@ -1067,12 +1034,12 @@ describe('Angular Core Extensions - Comprehensive Coverage Tests', () => {
 
     it('should handle complex overrides with global mocking', () => {
       const mockStorage: Storage = {
-        getItem: jest.fn().mockReturnValue('stored-value'),
-        setItem: jest.fn(),
-        removeItem: jest.fn(),
-        clear: jest.fn(),
+        getItem: vi.fn().mockReturnValue('stored-value'),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
         length: 1,
-        key: jest.fn().mockReturnValue('test-key')
+        key: vi.fn().mockReturnValue('test-key')
       };
 
       const result = provideCompleteWindowMock({

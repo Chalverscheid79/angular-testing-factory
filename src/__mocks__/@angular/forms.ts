@@ -239,9 +239,9 @@ export class FormBuilder {
         control.setParent(null);
         controls[index] = control;
       },
-      setValue: jest.fn(),
-      patchValue: jest.fn(),
-      reset: jest.fn(),
+      setValue: vi.fn(),
+      patchValue: vi.fn(),
+      reset: vi.fn(),
       value: controls.map(c => c.value),
       valid: true,
       invalid: false,
@@ -253,12 +253,12 @@ export class FormBuilder {
       dirty: false,
       touched: false,
       untouched: true,
-      markAsTouched: jest.fn(),
-      markAsUntouched: jest.fn(),
-      markAsDirty: jest.fn(),
-      markAsPristine: jest.fn(),
-      updateValueAndValidity: jest.fn(),
-      get: jest.fn()
+      markAsTouched: vi.fn(),
+      markAsUntouched: vi.fn(),
+      markAsDirty: vi.fn(),
+      markAsPristine: vi.fn(),
+      updateValueAndValidity: vi.fn(),
+      get: vi.fn()
     } as FormArray;
   }
   
@@ -285,9 +285,9 @@ export class FormBuilder {
         controls[name] = control;
       },
       contains: (path: string) => Object.prototype.hasOwnProperty.call(controls, path),
-      setValue: jest.fn(),
-      patchValue: jest.fn(),
-      reset: jest.fn(),
+      setValue: vi.fn(),
+      patchValue: vi.fn(),
+      reset: vi.fn(),
       value: Object.keys(controls).reduce((acc, key) => {
         acc[key] = controls[key].value;
         return acc;
@@ -302,12 +302,12 @@ export class FormBuilder {
       dirty: false,
       touched: false,
       untouched: true,
-      markAsTouched: jest.fn(),
-      markAsUntouched: jest.fn(),
-      markAsDirty: jest.fn(),
-      markAsPristine: jest.fn(),
-      updateValueAndValidity: jest.fn(),
-      get: jest.fn()
+      markAsTouched: vi.fn(),
+      markAsUntouched: vi.fn(),
+      markAsDirty: vi.fn(),
+      markAsPristine: vi.fn(),
+      updateValueAndValidity: vi.fn(),
+      get: vi.fn()
     } as FormRecord;
   }
 }
@@ -373,17 +373,17 @@ interface FormRecord {
 
 // Validators Mock - Essential part of FormBuilder API
 export class Validators {
-  static required = jest.fn().mockReturnValue(null);
-  static requiredTrue = jest.fn().mockReturnValue(null);
-  static email = jest.fn().mockReturnValue(null);
-  static min = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static max = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static minLength = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static maxLength = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static pattern = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static nullValidator = jest.fn().mockReturnValue(null);
+  static required = vi.fn().mockReturnValue(null);
+  static requiredTrue = vi.fn().mockReturnValue(null);
+  static email = vi.fn().mockReturnValue(null);
+  static min = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static max = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static minLength = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static maxLength = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static pattern = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static nullValidator = vi.fn().mockReturnValue(null);
   
   // Composed validators
-  static compose = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
-  static composeAsync = jest.fn().mockReturnValue(jest.fn().mockReturnValue(null));
+  static compose = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
+  static composeAsync = vi.fn().mockReturnValue(vi.fn().mockReturnValue(null));
 }
