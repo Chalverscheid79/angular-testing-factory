@@ -10,7 +10,12 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/**/index.ts'],
+      exclude: [
+        'src/**/*.spec.ts',
+        'src/**/index.ts',
+        'src/__mocks__/**',
+        'src/test-tokens.ts'
+      ],
       thresholds: {
         branches: 70,
         functions: 60,
